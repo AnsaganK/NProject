@@ -1,26 +1,21 @@
 from . import session
 from fastapi import APIRouter, Depends, Query, Response, status
-from lab.models.elements import Elements
-from lab.schemas.elements import ElementsSchema
-from app.auth.auth_bearer import JWTBearer
-from app.auth.auth_handler import decodeJWT
-from fastapi.security import HTTPBearer
+from lab.models.order import Order
+from lab.schemas.order import OrderSchema
 import time
 
 router = APIRouter()
 
 
 @router.get("/")
-async def get_elements(*, main: bool = Query(False)):
-    query = session.query(Elements).all()
-    if main:
-        query = session.query(Elements).filter(Elements.standard == True).all()
+async def get_orders(*, main: bool = Query(False)):
+    query = session.query(Order).all()
     return query
 
 
 @router.get("/{element_id}")
 async def get_element(element_id: int):
-    query = session.query(Elements).filter(Elements.id == element_id).first()
+    query = session.query(Order).filter(Elements.id == element_id).first()
     if query:
         return query
     return {"error": "Not Found"}

@@ -2,6 +2,9 @@ from . import session
 from fastapi import APIRouter
 from app.models.field import Field
 from app.schemas.field import FieldSchema
+from .organization import Organization
+from app.schemas.organization import OrganizationSchema
+
 
 router = APIRouter()
 
@@ -9,6 +12,8 @@ router = APIRouter()
 @router.get("/")
 async def get_fields():
     query = session.query(Field).all()
+    for i in query:
+        a = i.organization
     return query
 
 
@@ -22,15 +27,19 @@ async def get_field(field_id: int):
 
 @router.post("/")
 async def create_field(field: FieldSchema):
-    query = Field(name=field.name, kadastrNumber=field.kadastrNumber, coordinates=field.coordinates,
-                  urlShpFile=field.urlShpFile, shapeArea=field.shapeArea, shapeLength=field.shapeLength,
+    query = Field(name=field.name, kadastrNumber=field.kadNumber,
+                  urlShpFile=field.urlShpFile,
                   districtId=field.districtId
                   )
 
+    organization = session.query(Organization).filter(Organization.id == field.organizationId).first()
+    if not organization:
+        return {"error": "Not Found Field"}
     for i in session.query(Field).all():
-        if i.kadastrNumber == field.kadastrNumber:
+        if i.kadastrNumber == field.kadNumber:
             return {"error": "A field with this kad.number has already been created"}
 
+    query.organization.append(organization)
     session.add(query)
     session.commit()
 

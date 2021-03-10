@@ -6,10 +6,16 @@ from lab.schemas.elements import ElementsSchema
 from datetime import datetime
 from typing import Optional
 from pydantic import Field
+from enum import Enum
 
+
+class Types(Enum):
+    standard = "standard"
+    custom = "custom"
 
 class SamplesSchema(BaseModel):
     client: List[int]
-    amount: int
+    amount: int = Field(..., ge=1)
+    standard: bool = Field(default=False)
     elements: Optional[List[int]] = Field(None)
     date: Optional[int] = Field(None)

@@ -11,7 +11,7 @@ class Elements(Base):
     name = Column(String, unique=True)
     code = Column(String)
     date = Column(BigInteger)
-    isMain = Column(Boolean, default=False)
+    standard = Column(Boolean, default=False)
 
     def __repr__(self):
         return "<element ({})>".format(self.name)

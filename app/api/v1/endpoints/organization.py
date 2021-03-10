@@ -20,12 +20,14 @@ async def get_organizations():
     return query
 
 
-@router.get("/{organization_id}", dependencies=[Depends(JWTBearer())])
-async def get_organization(organization_id: int, token: str = Depends(JWTBearer())):
+@router.get("/{organization_id}")
+async def get_organization(organization_id: int):# token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
     #print("userId: ", user_id)
     query = session.query(Organization).filter(Organization.id == organization_id).first()
+
     if query:
+        print(query.samples)
         for i in query.users:
             for j in i.roles:
                 print(j)
@@ -74,7 +76,7 @@ async def delete_organization(organization_id:int):
         return {"message": "Organization ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
 
-@router.post("/create_admin", dependencies=[Depends(JWTBearer())])
+@router.post("/create_admin")
 async def create_organization_user(ou: OrganizationUserSchema):
     organizationQuery = Organization(name=ou.organization.name, bin=ou.organization.bin)
 

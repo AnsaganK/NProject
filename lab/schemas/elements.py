@@ -7,4 +7,4 @@ class ElementsSchema(BaseModel):
     name: str
     code: str
     date: Optional[int] = Field(None)
-    isMain: bool = Field(default=False)
+    standard: bool = Field(default=False)

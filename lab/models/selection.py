@@ -27,10 +27,11 @@ class Selection(Base):
     __tablename__ = "selection"
 
     id = Column(Integer, primary_key=True)
-    name = relationship("Organization", secondary=SelectionOrganization, backref="selection")
+    organization = relationship("Organization", secondary=SelectionOrganization, backref="selection")
     samples = relationship("Samples", secondary=SelectionSamples, backref="selection")
     amount = Column(Integer)
     date = Column(BigInteger)
     status = Column(String)
+
     def __repr__(self):
-        return "<element ({})>".format(self.id)
+        return "<selection ({})>".format(self.id)

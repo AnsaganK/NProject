@@ -37,6 +37,9 @@ async def create_sample(sample: SamplesSchema):
         date = int(time.time())
 
     sampleQuery = Samples(amount=sample.amount, date=date)
+    if sample.standard:
+        for i in session.query(Elements).filter(Elements.standard == True).all():
+            sampleQuery.elements.append(i)
     for i in sample.elements:
         element = session.query(Elements).filter(Elements.id == int(i)).first()
         if element:

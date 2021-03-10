@@ -1,10 +1,11 @@
 from pydantic import BaseModel, HttpUrl
+from typing import Optional
+from pydantic.types import List
+
 
 class FieldSchema(BaseModel):
     name: str
-    kadastrNumber: str
-    coordinates: str
+    kadNumber: str
+    organizationId: int
     urlShpFile: str
-    shapeArea: str
-    shapeLength: str
     districtId: str
