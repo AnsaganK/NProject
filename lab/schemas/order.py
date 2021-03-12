@@ -1,13 +1,16 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, Json
 from datetime import datetime
 from pydantic.types import List
 from typing import Optional
 
 
+
 class OrderSchema(BaseModel):
-    date: str
-    samples: Optional[List[int]] = Field(None)
-    element: List[int] = Field(None)
+    name: Optional[str] = Field(None)
+    description: Optional[str] = Field(None)
+    date: int
     organizationId: int
     fieldId: int
-    grid: List[int]
+    elements: List[int]
+    grid: dict
+    cellCount: int

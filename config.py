@@ -1,4 +1,3 @@
-from sqlalchemy.orm import sessionmaker
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -11,9 +10,7 @@ DATABASE_URL = (
     f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 )
 engine = sqlalchemy.create_engine(
-    DATABASE_URL
+    DATABASE_URL, pool_pre_ping=True
 )
+Base = declarative_base()
 
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()

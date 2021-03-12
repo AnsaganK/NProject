@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, Column
 from sqlalchemy.orm import relationship
-from app.models import Base
+from config import Base
 from app.models.RolePermission import RolesPermissions
 
 

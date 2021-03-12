@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy import Integer, String, Column
 from sqlalchemy.orm import relationship
-from app.models import Base, DATABASE_URL, engine
+from config import Base, DATABASE_URL, engine
 
 
 class Permission(Base):

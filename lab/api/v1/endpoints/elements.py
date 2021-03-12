@@ -1,4 +1,4 @@
-from . import session
+from app.api.v1.endpoints import session
 from fastapi import APIRouter, Depends, Query, Response, status
 from lab.models.elements import Elements
 from lab.schemas.elements import ElementsSchema
