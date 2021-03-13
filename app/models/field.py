@@ -1,5 +1,5 @@
 from config import Base
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, Table, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 
 
@@ -21,6 +21,7 @@ class Field(Base):
     kadastrNumber = Column(String, unique=True)
     urlShpFile = Column(String)
     districtId = Column(String)
+    GeoJson = Column(JSON)
 
     def __repr__(self):
         return "<Field ({})>".format(self.id)

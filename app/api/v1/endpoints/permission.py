@@ -1,4 +1,4 @@
-from . import session
+from db import session
 from fastapi import APIRouter
 from app.models.permission import Permission
 from app.schemas.permission import PermissionSchema

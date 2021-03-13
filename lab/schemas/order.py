@@ -13,4 +13,5 @@ class OrderSchema(BaseModel):
     fieldId: int
     elements: List[int]
     grid: dict
+    way: dict
     cellCount: int

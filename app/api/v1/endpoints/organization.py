@@ -1,4 +1,4 @@
-from . import session
+from db import session
 from fastapi import APIRouter, Depends, Header
 from app.models.organization import Organization
 from app.models.user import User

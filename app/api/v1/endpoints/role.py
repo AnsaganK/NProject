@@ -1,4 +1,4 @@
-from . import session
+from db import session
 from fastapi import APIRouter
 from app.schemas.role import RoleCreateSchema
 from app.schemas.RolePermission import RolePermissionSchema

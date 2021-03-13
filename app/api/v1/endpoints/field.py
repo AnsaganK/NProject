@@ -1,4 +1,4 @@
-from . import session
+from db import session
 from fastapi import APIRouter
 from app.models.field import Field
 from app.schemas.field import FieldSchema

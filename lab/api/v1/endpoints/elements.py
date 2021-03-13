@@ -1,10 +1,7 @@
-from app.api.v1.endpoints import session
-from fastapi import APIRouter, Depends, Query, Response, status
+from db import session
+from fastapi import APIRouter, Query
 from lab.models.elements import Elements
 from lab.schemas.elements import ElementsSchema
-from app.auth.auth_bearer import JWTBearer
-from app.auth.auth_handler import decodeJWT
-from fastapi.security import HTTPBearer
 import time
 
 router = APIRouter()

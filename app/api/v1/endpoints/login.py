@@ -5,7 +5,7 @@ from app.auth.auth_handler import signJWT
 from app.models.user import User
 from app.models.role import Role
 from app.schemas.user import UserSchema, UserLoginSchema
-from . import session
+from db import session
 from app.views.user import check_user
 
 router = APIRouter()

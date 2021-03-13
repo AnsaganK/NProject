@@ -1,8 +1,9 @@
-from app.api.v1.endpoints import session
+from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
 from lab.models.order import Order
 from app.models.organization import Organization
 from lab.models.elements import Elements
+from lab.models.cells import Cells
 from lab.schemas.order import OrderSchema
 import time
 
@@ -25,7 +26,7 @@ async def get_order(element_id: int):
 
 @router.post("/")
 async def create_order(order: OrderSchema):
-    query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid, cellCount=order.cellCount)
+    query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid, cellCount=order.cellCount, way=order.way)
     if not query.date:
         query.date = int(time.time())
     organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
@@ -35,6 +36,9 @@ async def create_order(order: OrderSchema):
     for i in query.elements:
         element = session.query(Elements).filter(Elements.id == i).first()
         query.elements.append(element)
+    for i in range(1, order.cellCount+1):
+        cell = Cells(code=i)
+        query.cells.append(cell)
 
     session.add(query)
     session.commit()
@@ -70,4 +74,3 @@ async def delete_order(order_id: int):
         session.commit()
         return {"message": "Order ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
-

@@ -1,5 +1,5 @@
 from app.schemas.user import UserLoginSchema
-from app.api.v1.endpoints import session
+from db import session
 from app.models.user import User
 
 
