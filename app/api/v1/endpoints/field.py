@@ -40,7 +40,8 @@ async def create_field(field: FieldSchema):
         if i.kadNumber == field.kadNumber:
             return {"error": "A field with this kad.number has already been created"}
 
-    query.organization.append(organization)
+
+    query.organization = organization
     session.add(query)
     session.commit()
 

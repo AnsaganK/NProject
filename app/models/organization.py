@@ -10,5 +10,8 @@ class Organization(Base):
     name = Column(String, unique=True)
     bin = Column(String)
 
+
     def __repr__(self):
         return "<organization ({})>".format(self.name)
+
+Organization.field = relationship('Field', back_populates="organization")
