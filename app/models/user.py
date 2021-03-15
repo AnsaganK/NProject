@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Integer, String, Column
+from sqlalchemy import Integer, String, Column, ForeignKey
 from sqlalchemy.orm import relationship
 from config import Base, DATABASE_URL, engine
 from app.models.UserRole import UsersRoles
@@ -13,7 +13,8 @@ class User(Base):
     firstName = Column(String)
     lastName = Column(String)
     password = Column(String)
-    organization = relationship("Organization", secondary=OrganizationUser, backref="users")
+    organization_id = Column(Integer, ForeignKey('organization.id'))
+    organization = relationship('Organization', backref="user")
     roles = relationship("Role", secondary=UsersRoles, backref="users")
 
     def __repr__(self):

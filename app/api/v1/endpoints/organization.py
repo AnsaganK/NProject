@@ -76,6 +76,7 @@ async def delete_organization(organization_id:int):
 
 @router.post("/create_admin")
 async def create_organization_user(ou: OrganizationUserSchema):
+    print(ou)
     organizationQuery = Organization(name=ou.organization.name, bin=ou.organization.bin)
 
     for i in session.query(Organization).all():
@@ -102,7 +103,7 @@ async def create_organization_user(ou: OrganizationUserSchema):
                     #ou["userObject"]["role"].append({"id": userId})
                     userQuery.roles.append(role)
         
-        userQuery.organization.append(organizationQuery)
+        userQuery.organization = organizationQuery
         session.add(userQuery)
         session.commit()
 

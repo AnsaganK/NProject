@@ -14,4 +14,6 @@ class Organization(Base):
     def __repr__(self):
         return "<organization ({})>".format(self.name)
 
-Organization.field = relationship('Field', back_populates="organization")
+
+#Organization.field = relationship('Field', back_populates="organization")
+#Organization.user = relationship('User', back_populates="organization")
