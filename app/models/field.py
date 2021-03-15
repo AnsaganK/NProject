@@ -1,6 +1,7 @@
 from config import Base
 from sqlalchemy import Column, Integer, String, Table, ForeignKey, JSON
 from sqlalchemy.orm import relationship
+from app.models.organization import Organization
 
 
 FieldOrganization = Table(
@@ -17,8 +18,8 @@ class Field(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    organization = relationship("Organization", secondary=FieldOrganization, backref="fields")
-    kadastrNumber = Column(String, unique=True)
+    organization = relationship('Organization', secondary=FieldOrganization, backref="fields", lazy="subquery")
+    kadNumber = Column(String, unique=True)
     urlShpFile = Column(String)
     districtId = Column(String)
     GeoJson = Column(JSON)

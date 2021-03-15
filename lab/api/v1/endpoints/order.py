@@ -4,6 +4,8 @@ from lab.models.order import Order
 from app.models.organization import Organization
 from lab.models.elements import Elements
 from lab.models.cells import Cells
+from lab.models.status import Status
+from app.models.field import Field
 from lab.schemas.order import OrderSchema
 import time
 
@@ -13,6 +15,9 @@ router = APIRouter()
 @router.get("/")
 async def get_order():
     query = session.query(Order).all()
+    for i in query:
+        a = i.organization
+        b = i.field
     return query
 
 
@@ -33,11 +38,18 @@ async def create_order(order: OrderSchema):
     if not organization:
         return {"error": "Not Found Organization"}
     query.organization.append(organization)
+    field = session.query(Field).filter(Field.id == order.fieldId).first()
+    if not field:
+        return {"error": "Not Found Field"}
+    query.field.append(field)
     for i in query.elements:
         element = session.query(Elements).filter(Elements.id == i).first()
         query.elements.append(element)
+    status = session.query(Status).filter(Status.id == 1).first()
     for i in range(1, order.cellCount+1):
         cell = Cells(code=i)
+        if status:
+            cell.status.append(status)
         query.cells.append(cell)
 
     session.add(query)

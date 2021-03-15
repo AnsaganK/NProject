@@ -35,6 +35,13 @@ OrderCellsResult = Table(
     Column('elementId', Integer, ForeignKey('elements.id')),
     Column('result', Float)
 )
+OrderField = Table(
+    'OrderField',
+    Base.metadata,
+    Column('id', Integer, primary_key=True),
+    Column('orderId', Integer, ForeignKey('orders.id')),
+    Column('fieldId', Integer, ForeignKey('fields.id')),
+)
 
 
 class Order(Base):
@@ -44,6 +51,7 @@ class Order(Base):
     description = Column(String)
     organization = relationship('Organization', secondary=OrderOrganization, backref="orders")
     elements = relationship('Elements', secondary=OrderElements, backref="orders")
+    field = relationship('Field', secondary=OrderField, backref="orders")
     date = Column(Integer)
     grid = Column(JSON)
     way = Column(JSON)

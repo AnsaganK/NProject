@@ -8,7 +8,7 @@ from typing import Optional
 class OrderSchema(BaseModel):
     name: Optional[str] = Field(None)
     description: Optional[str] = Field(None)
-    date: int
+    date: Optional[int] = Field(None)
     organizationId: int
     fieldId: int
     elements: List[int]

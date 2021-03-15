@@ -10,6 +10,7 @@ CellsStatus = Table(
     Column('statusId', Integer, ForeignKey('status.id'))
 )
 
+
 class Cells(Base):
     __tablename__ = "cells"
 

@@ -11,9 +11,9 @@ router = APIRouter()
 
 @router.get("/")
 async def get_fields():
+    #query = session.query(Field, Organization.id).join(Field.organization).all()
+    #query = session.query(Field.name, Field.organization.label('organization')).all()
     query = session.query(Field).all()
-    for i in query:
-        a = i.organization
     return query
 
 
@@ -27,16 +27,17 @@ async def get_field(field_id: int):
 
 @router.post("/")
 async def create_field(field: FieldSchema):
-    query = Field(name=field.name, kadastrNumber=field.kadNumber,
+    query = Field(name=field.name, kadNumber=field.kadNumber,
                   urlShpFile=field.urlShpFile,
-                  districtId=field.districtId
+                  districtId=field.districtId,
+                  GeoJson=field.GeoJson
                   )
 
     organization = session.query(Organization).filter(Organization.id == field.organizationId).first()
     if not organization:
         return {"error": "Not Found Field"}
     for i in session.query(Field).all():
-        if i.kadastrNumber == field.kadNumber:
+        if i.kadNumber == field.kadNumber:
             return {"error": "A field with this kad.number has already been created"}
 
     query.organization.append(organization)
@@ -53,15 +54,12 @@ async def create_field(field: FieldSchema):
 async def update_field(field_id:int, field: FieldSchema):
     query = session.query(Field).filter(Field.id == field_id).first()
     for i in session.query(Field).all():
-        if i.kadastrNumber == Field.kadastrNumber and i.id != query.id:
+        if i.kadastrNumber == Field.kadNumber and i.id != query.id:
             return {"error": "A field with this name has already been created"}
     if query:
         query.name = field.name
-        query.kadastrNumber = field.kadastrNumber
-        query.coordinates = field.coordinates
+        query.kadastrNumber = field.kadNumber
         query.urlShpFile = field.urlShpFile
-        query.shapeArea = field.shapeArea
-        query.shapeLength = field.shapeLength
         query.districtId = field.districtId
         return {"message": "Field ({}) updated".format(query.name)}
     return {"error": "Not Found"}

@@ -7,6 +7,6 @@ class FieldSchema(BaseModel):
     name: Optional[str] = Field(None)
     kadNumber: str
     organizationId: int
-    urlShpFile: str
-    districtId: str
+    urlShpFile: Optional[str] = Field(None)
+    districtId: Optional[str] = Field(None)
     GeoJson: dict

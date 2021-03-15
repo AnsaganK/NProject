@@ -17,6 +17,7 @@ router = APIRouter()
 @router.get("/")
 async def get_organizations():
     query = session.query(Organization).all()
+
     return query
 
 
@@ -27,12 +28,9 @@ async def get_organization(organization_id: int):# token: str = Depends(JWTBeare
     query = session.query(Organization).filter(Organization.id == organization_id).first()
 
     if query:
-        print(query.samples)
-        for i in query.users:
-            for j in i.roles:
-                print(j)
-            print(i)
-
+        a = query.orders
+        b = query.fields
+        c = query.users
         return query
     return {"error": "Not Found"}
 
@@ -93,16 +91,17 @@ async def create_organization_user(ou: OrganizationUserSchema):
                 return {"error": "A user with this name has already been created"}
             if i.email == u.email:
                 return {"error": "A user with this email has already been created"}
-
-        for i in u.role:
-            userId = int(i.dict()["id"])
-            role = session.query(Role).filter(Role.id == userId).first()
-            print(ou)
-            #ou = ou.dict()
-            #ou["userObject"]["role"] = []
-            if role:
-                #ou["userObject"]["role"].append({"id": userId})
-                userQuery.roles.append(role)
+        if u.role:
+            for i in u.role:
+                userId = int(i.dict()["id"])
+                role = session.query(Role).filter(Role.id == userId).first()
+                print(ou)
+                #ou = ou.dict()
+                #ou["userObject"]["role"] = []
+                if role:
+                    #ou["userObject"]["role"].append({"id": userId})
+                    userQuery.roles.append(role)
+        
         userQuery.organization.append(organizationQuery)
         session.add(userQuery)
         session.commit()
