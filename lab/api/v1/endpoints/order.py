@@ -15,9 +15,6 @@ router = APIRouter()
 @router.get("/")
 async def get_order():
     query = session.query(Order).all()
-    for i in query:
-        a = i.organization
-        b = i.field
     return query
 
 
@@ -37,11 +34,11 @@ async def create_order(order: OrderSchema):
     organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
     if not organization:
         return {"error": "Not Found Organization"}
-    query.organization.append(organization)
+    query.organization = organization
     field = session.query(Field).filter(Field.id == order.fieldId).first()
     if not field:
         return {"error": "Not Found Field"}
-    query.field.append(field)
+    query.field = field
     for i in query.elements:
         element = session.query(Elements).filter(Elements.id == i).first()
         query.elements.append(element)
@@ -49,9 +46,9 @@ async def create_order(order: OrderSchema):
     for i in range(1, order.cellCount+1):
         cell = Cells(code=i)
         if status:
-            cell.status.append(status)
+            cell.status = status
+        #cell.order = query
         query.cells.append(cell)
-
     session.add(query)
     session.commit()
 

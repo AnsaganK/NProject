@@ -12,10 +12,6 @@ router = APIRouter()
 @router.get("")
 def get_all():
     query = session.query(User).all()
-    for i in query:
-        print(i.organization)
-        for j in i.roles:
-            print(j)
     return query
 
 

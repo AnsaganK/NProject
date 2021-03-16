@@ -13,7 +13,7 @@ class User(Base):
     firstName = Column(String)
     lastName = Column(String)
     password = Column(String)
-    organization_id = Column(Integer, ForeignKey('organization.id'))
+    organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="user")
     roles = relationship("Role", secondary=UsersRoles, backref="users")
 

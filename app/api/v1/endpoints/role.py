@@ -95,7 +95,6 @@ async def create_role_permission(rp: RolePermissionSchema):
 
 @router.delete("/{rp_id}")
 async def delete_roles_permissions(rp_id: int):
-
     rp = session.query(RolesPermissions).filter(RolesPermissions.id == int(rp_id)).first()
     if rp:
         session.delete(rp)

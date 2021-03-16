@@ -18,12 +18,12 @@ class Field(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    organization_id = Column(Integer, ForeignKey('organization.id'))
+    organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="fields") #lazy='subquery')
     kadNumber = Column(String, unique=True)
     urlShpFile = Column(String)
     districtId = Column(String)
-    GeoJson = Column(JSON)
+    geoJson = Column(JSON)
 
     def __repr__(self):
         return "<Field ({})>".format(self.id)

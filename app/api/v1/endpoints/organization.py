@@ -28,9 +28,7 @@ async def get_organization(organization_id: int):# token: str = Depends(JWTBeare
     query = session.query(Organization).filter(Organization.id == organization_id).first()
 
     if query:
-        a = query.orders
-        b = query.fields
-        c = query.users
+        a = query.user
         return query
     return {"error": "Not Found"}
 

@@ -30,7 +30,7 @@ async def create_field(field: FieldSchema):
     query = Field(name=field.name, kadNumber=field.kadNumber,
                   urlShpFile=field.urlShpFile,
                   districtId=field.districtId,
-                  GeoJson=field.GeoJson
+                  geoJson=field.geoJson
                   )
 
     organization = session.query(Organization).filter(Organization.id == field.organizationId).first()
