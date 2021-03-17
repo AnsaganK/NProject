@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy import ForeignKey
 
-
+'''
 class Status(Base):
     __tablename__ = 'status'
 
@@ -13,5 +13,4 @@ class Status(Base):
 
     def __repr__(self):
         return self.name
-
-
+'''

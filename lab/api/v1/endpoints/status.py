@@ -1,8 +1,7 @@
 from db import session
 from fastapi import APIRouter
-from lab.models.status import Status
 from lab.schemas.status import StatusSchema
-
+'''
 router = APIRouter()
 
 
@@ -57,4 +56,4 @@ async def delete_order(status_id: int):
         session.commit()
         return {"message": "Status ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
-
+'''

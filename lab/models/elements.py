@@ -18,9 +18,9 @@ class ElementType(Base):
 
     id = Column(Integer, primary_key=True)
     typeId = Column(Integer, ForeignKey('types.id'))
-    type = relationship("Type", backref="element")
+    type = relationship("Type", cascade="all,delete", backref="element")
     elementId = Column(Integer, ForeignKey('elements.id'))
-    element = relationship("Elements", backref="type")
+    element = relationship("Elements",  backref="types")
 
     def __repr__(self):
         return "<ElementType ({})>".format(self.id)
@@ -42,9 +42,9 @@ class ElementColor(Base):
 
     id = Column(Integer, primary_key=True)
     elementTypeId = Column(Integer, ForeignKey("ElementType.id"))
-    elementType = relationship("ElementType", backref="color")
+    elementType = relationship("ElementType", cascade="all,delete",  backref="color")
     rangeColorId = Column(Integer, ForeignKey("RangeColor.id"))
-    rangeColor = relationship("RangeColor", backref="element")
+    rangeColor = relationship("RangeColor", cascade="all,delete",  backref="element")
 
     def __repr__(self):
         return self.id
@@ -66,9 +66,9 @@ class RangeColor(Base):
     id = Column(Integer, primary_key=True)
 
     rangeId = Column(Integer, ForeignKey('range.id'))
-    range = relationship("Range", backref="color")
+    range = relationship("Range", cascade="all,delete",  backref="color")
     colorId = Column(Integer, ForeignKey('colors.id'))
-    color = relationship("Color", backref="range")
+    color = relationship("Color",  backref="range")
 
     def __repr__(self):
         return "<RangeColor ({})>".format(self.id)

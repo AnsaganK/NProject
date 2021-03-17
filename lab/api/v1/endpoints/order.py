@@ -1,10 +1,9 @@
 from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
-from lab.models.order import Order
+from lab.models.order import Order, OrderCells
 from app.models.organization import Organization
 from lab.models.elements import Elements
 from lab.models.cells import Cells
-from lab.models.status import Status
 from app.models.field import Field
 from lab.schemas.order import OrderSchema
 import time
@@ -19,9 +18,10 @@ async def get_order():
 
 
 @router.get("/{order_id}")
-async def get_order(element_id: int):
-    query = session.query(Order).filter(Order.id == element_id).first()
+async def get_order(order_id: int):
+    query = session.query(Order).filter(Order.id == order_id).first()
     if query:
+        a = query.cells
         return query
     return {"error": "Not Found"}
 
@@ -30,7 +30,7 @@ async def get_order(element_id: int):
 async def create_order(order: OrderSchema):
     query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid, cellCount=order.cellCount, way=order.way)
     if not query.date:
-        query.date = int(time.time())
+        query.date = int(time.time())*1000
     organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
     if not organization:
         return {"error": "Not Found Organization"}
@@ -42,17 +42,18 @@ async def create_order(order: OrderSchema):
     for i in query.elements:
         element = session.query(Elements).filter(Elements.id == i).first()
         query.elements.append(element)
-    status = session.query(Status).filter(Status.id == 1).first()
+    status = "planned"
     for i in range(1, order.cellCount+1):
         cell = Cells(code=i)
+        date = int(time.time())*1000
         if status:
-            cell.status = status
-        #cell.order = query
-        query.cells.append(cell)
+            orderCells = OrderCells(status=status, order=query, cell=cell, date=date)
+        else:
+            orderCells = OrderCells(order=query, cell=cell, date=date)
+        session.add(orderCells)
     session.add(query)
     session.commit()
 
-    #for i in range(1,query.cellCount+1):
     last_id = query.id
     organization = order.dict()
 
@@ -68,7 +69,7 @@ async def update_order(order_id: int, order: OrderSchema):
         if order.date:
             query.date = order.date
         else:
-            query.date = int(time.time())
+            query.date = int(time.time())*1000
         query.grid = order.grid
         query.cellCount = order.cellCount
         return {"message": "Order ({}) updated".format(query.name)}

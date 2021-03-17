@@ -21,6 +21,7 @@ async def get_fields():
 async def get_field(field_id: int):
     query = session.query(Field).filter(Field.id == field_id).first()
     if query:
+        a = query.organization
         return query
     return {"error": "Not Found"}
 

@@ -31,3 +31,21 @@ async def create_element(color: ColorSchema):
     last_id = query.id
     color = color.dict()
     return {**color, "id": last_id}
+
+@router.put("/{color_id}")
+async def update_color(color_id: int, color: ColorSchema):
+    query = session.query(Color).filter(Color.id == color_id)
+    if query:
+        query.name = color.name
+        query.code = color.code
+        return {"message": "Color ({}) updated".format(query.name)}
+    return {"error": "Not Found Color"}
+
+@router.delete("/{color_id}")
+async def delete_color(color_id: int):
+    query = session.query(Color).filter(Color.id == color_id).first()
+    if query:
+        session.delete(query)
+        session.commit()
+        return {"message": "Color ({}) deleted".format(query.name)}
+    return {"error": "Not Found Color"}

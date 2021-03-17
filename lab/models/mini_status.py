@@ -1,7 +1,7 @@
 from config import Base
 from sqlalchemy import String, Column, Integer
 
-
+'''
 class MiniStatus(Base):
     __tablename__ = "MiniStatus"
 
@@ -10,3 +10,4 @@ class MiniStatus(Base):
 
     def __repr__(self):
         return self.name
+'''

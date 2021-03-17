@@ -13,7 +13,7 @@ async def get_elements(*, main: bool = Query(False)):
     if main:
         query = session.query(Elements).filter(Elements.standard == True).all()
         for i in query:
-            a = i.type
+            a = i.types
     return query
 
 
@@ -22,14 +22,14 @@ async def get_element(element_id: int):
     query = session.query(Elements).filter(Elements.id == element_id).first()
     if query:
         dic = {"name": query.name, "code": query.code, "date": query.date, "types": []}
-        types = query.type
+        types = query.types
         for type in types:
             t = {"name": type.type.name, "range": []}
             element_type = session.query(ElementType).filter(ElementType.element == query).filter(ElementType.type == type).first()
             element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
             for j in element_colors:
                 range_color = j.rangeColor
-                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to, "color": range_color.color.code}
+                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to, "color": range_color.color.id, "code": range_color.color.code}
                 t["range"].append(r)
             dic["types"].append(t)
         return dic
@@ -58,6 +58,7 @@ async def create_element(element: ElementsSchema):
                 rangeColor = RangeColor(range=range, color=color)
                 elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
                 session.add(elementColor)
+    session.add(query)
     session.commit()
 
     last_id = query.id
@@ -80,7 +81,41 @@ async def update_element(element_id: int, element: ElementsSchema):
             query.date = element.date
         else:
             query.date = int(time.time())
-        return {"message": "Element ({}) updated".format(query.name)}
+
+        for i in query.types:
+            type = i
+            session.delete(type)
+            for j in session.query(ElementColor).filter(ElementColor.elementType == type).all():
+                session.delete(j)
+        session.commit()
+        for i in element.types:
+            type = Type(name=i.name)
+            elementType = ElementType(type=type, element=query)
+            for j in i.range:
+                range_name = j.name
+                range_of = j.of
+                range_to = j.to
+                range = Range(name=range_name, of=range_of, to=range_to)
+                color = session.query(Color).filter(Color.id == j.color).first()
+                if color:
+                    rangeColor = RangeColor(range=range, color=color)
+                    elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
+                    session.add(elementColor)
+        session.commit()
+        dic = {"name": query.name, "code": query.code, "date": query.date, "types": []}
+        types = query.types
+        for type in types:
+            t = {"name": type.type.name, "range": []}
+            element_type = session.query(ElementType).filter(ElementType.element == query).filter(
+                ElementType.type == type).first()
+            element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
+            for j in element_colors:
+                range_color = j.rangeColor
+                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to,
+                     "color": range_color.color.id}
+                t["range"].append(r)
+            dic["types"].append(t)
+        return dic
     return {"error": "Not Found"}
 
 
