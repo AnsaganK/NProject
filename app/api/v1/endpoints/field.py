@@ -5,6 +5,8 @@ from app.schemas.field import FieldSchema
 from .organization import Organization
 from app.schemas.organization import OrganizationSchema
 
+from sqlalchemy.orm import selectinload
+
 
 router = APIRouter()
 
@@ -13,7 +15,7 @@ router = APIRouter()
 async def get_fields():
     #query = session.query(Field, Organization.id).join(Field.organization).all()
     #query = session.query(Field.name, Field.organization.label('organization')).all()
-    query = session.query(Field).all()
+    query = session.query(Field).options(selectinload(Field.organization)).all()
     return query
 
 
@@ -25,6 +27,12 @@ async def get_field(field_id: int):
         return query
     return {"error": "Not Found"}
 
+@router.get("/organization/{organization_id}")
+async def get_field(organization_id: int):
+    query = session.query(Organization).options(selectinload(Organization.fields)).filter(Organization.id == organization_id).all()
+    if query:
+        return query
+    return {"error": "Not Found"}
 
 @router.post("/")
 async def create_field(field: FieldSchema):

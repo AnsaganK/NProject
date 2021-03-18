@@ -6,7 +6,9 @@ from lab.models.elements import Elements
 from lab.models.cells import Cells
 from app.models.field import Field
 from lab.schemas.order import OrderSchema
+from lab.schemas.status import StatusName, StatusIdSchema
 import time
+from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 
@@ -15,6 +17,18 @@ router = APIRouter()
 async def get_order():
     query = session.query(Order).all()
     return query
+
+@router.post("/status/")
+async def get_cells_for_order(status: StatusIdSchema):
+    print(status)
+    print(OrderCells.status)
+    #orderCells = session.query(OrderCells).filter(OrderCells.status == status).all()
+    #orderCells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
+    #cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
+    orderCells = session.query(OrderCells).join(Order).filter(OrderCells.status == status.status).subquery()
+    orders = session.query(Order).join(orderCells).filter(OrderCells.orderId == Order.id).all()
+    print(orders)
+    return orders
 
 
 @router.get("/{order_id}")
