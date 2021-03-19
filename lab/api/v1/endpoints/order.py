@@ -1,6 +1,6 @@
 from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
-from lab.models.order import Order, OrderCells
+from lab.models.order import Order, OrderCells, OrderGroup
 from app.models.organization import Organization
 from lab.models.elements import Elements
 from lab.models.cells import Cells
@@ -39,16 +39,35 @@ async def get_order(order_id: int):
         return query
     return {"error": "Not Found"}
 
+@router.get("/groups/")
+async def get_order_group():
+    query = session.query(OrderGroup).all()
+    return query
+
+@router.get("/groups/{group_id}")
+async def get_order_group_id(group_id: int):
+    query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
+    return query
 
 @router.post("/")
 async def create_order(order: OrderSchema):
-    query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid, cellCount=order.cellCount, way=order.way)
-    if not query.date:
-        query.date = int(time.time())*1000
     organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
     if not organization:
         return {"error": "Not Found Organization"}
-    query.organization = organization
+    date = int(time.time())*1000
+    query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid,
+                  cellCount=order.cellCount, way=order.way)
+    orderQuery = session.query(OrderGroup).filter(OrderGroup.id == order.orderGroupId).first()
+    if orderQuery:
+        query.organization = orderQuery.organization
+        query.group = orderQuery
+    else:
+        orderGroup = OrderGroup(name=organization.name+" | "+str(date)+" | "+str(organization.id), date=date, organization=organization)
+        query.group = orderGroup
+        query.organization = organization
+    if not query.date:
+        query.date = int(time.time())*1000
+
     field = session.query(Field).filter(Field.id == order.fieldId).first()
     if not field:
         return {"error": "Not Found Field"}

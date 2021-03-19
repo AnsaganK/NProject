@@ -9,4 +9,7 @@ class FieldSchema(BaseModel):
     organizationId: int
     urlShpFile: Optional[str] = Field(None)
     districtId: Optional[str] = Field(None)
+    typeId: Optional[int] = Field(None)
+    area: dict
+    length: float
     geoJson: dict

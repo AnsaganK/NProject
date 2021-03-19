@@ -3,7 +3,6 @@ from .role import RoleForUserSchema
 from pydantic.types import List, Optional
 
 class FullUserSchema(BaseModel):
-    username: str = Field(...)
     firstName: str = Field(...)
     lastName: str = Field(...)
     email: EmailStr = Field(...)
@@ -12,7 +11,6 @@ class FullUserSchema(BaseModel):
     role: List[RoleForUserSchema] = Field(None)
 
 class UserSchema(BaseModel):
-    username: str = Field(...)
     firstName: str = Field(...)
     lastName: str = Field(...)
     email: EmailStr = Field(...)
@@ -22,13 +20,5 @@ class UserSchema(BaseModel):
 
 class UserLoginSchema(BaseModel):
     id: int = Field(None)
-    username: str = Field(...)
+    email: EmailStr = Field(...)
     password: str = Field(...)
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "username": "username",
-                "password": "12345"
-            }
-        }

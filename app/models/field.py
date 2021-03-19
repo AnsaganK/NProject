@@ -1,5 +1,5 @@
 from config import Base
-from sqlalchemy import Column, Integer, String, Table, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, Table, ForeignKey, Float, JSON
 from sqlalchemy.orm import relationship
 from app.models.organization import Organization
 
@@ -13,6 +13,7 @@ FieldOrganization = Table(
 )
 
 
+
 class Field(Base):
     __tablename__ = "fields"
 
@@ -23,6 +24,10 @@ class Field(Base):
     kadNumber = Column(String, unique=True)
     urlShpFile = Column(String)
     districtId = Column(String)
+    area = Column(JSON)
+    length = Column(Float)
+    typeId = Column(Integer, ForeignKey('TypesForField.id'))
+    type = relationship('TypesForField', backref='field')
     geoJson = Column(JSON)
 
     def __repr__(self):

@@ -71,33 +71,3 @@ async def delete_roles(role_id: int):
         return {"message": "Role ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
 
-
-@router.post("/RolePermission")
-async def create_role_permission(rp: RolePermissionSchema):
-    dic = {}
-    dic["roles"] = []
-    dic["permissions"] = []
-    for i in rp.roles:
-        role = session.query(Role).filter(Role.id == int(i)).first()
-        if role:
-            dic["roles"].append(i)
-            for j in rp.permissions:
-                permission = session.query(Permission).filter(Permission.id == int(j)).first()
-                if permission:
-                    dic["permissions"].append(j)
-                    print(i)
-                    print("  ", j)
-                    role.permissions.append(permission)
-                    session.add(role)
-                    session.commit()
-    return dic
-
-
-@router.delete("/{rp_id}")
-async def delete_roles_permissions(rp_id: int):
-    rp = session.query(RolesPermissions).filter(RolesPermissions.id == int(rp_id)).first()
-    if rp:
-        session.delete(rp)
-        session.commit()
-        return {"message": "RolePermissions ({}) deleted".format(rp.id)}
-    return {"error": "Not Found"}

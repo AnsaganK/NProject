@@ -34,7 +34,7 @@ async def create_element(color: ColorSchema):
 
 @router.put("/{color_id}")
 async def update_color(color_id: int, color: ColorSchema):
-    query = session.query(Color).filter(Color.id == color_id)
+    query = session.query(Color).filter(Color.id == color_id).first()
     if query:
         query.name = color.name
         query.code = color.code

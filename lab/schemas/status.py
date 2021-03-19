@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
+from pydantic.types import Optional
 
 class StatusName(str, Enum):
     planned = "planned"
@@ -23,8 +24,10 @@ status_dict = [
     {"name": StatusName.agrohym, "code": StatusName.agrohym},
 ]
 
+
 class StatusSchema(BaseModel):
     name: str
+    color: Optional[str] = Field(None)
 
 
 class StatusIdSchema(BaseModel):

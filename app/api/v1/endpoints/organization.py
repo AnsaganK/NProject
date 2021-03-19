@@ -83,11 +83,9 @@ async def create_organization_user(ou: OrganizationUserSchema):
 
     u = ou.userObject
     if u:
-        userQuery = User(username=u.username, firstName=u.firstName, lastName=u.lastName, email=u.email, password=u.password)
+        userQuery = User(firstName=u.firstName, lastName=u.lastName, email=u.email, password=u.password)
 
         for i in session.query(User).all():
-            if i.username == u.username:
-                return {"error": "A user with this name has already been created"}
             if i.email == u.email:
                 return {"error": "A user with this email has already been created"}
         if u.role:

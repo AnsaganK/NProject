@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy import ForeignKey
 
-
 OrderElements = Table(
     'OrderElements',
     Base.metadata,
@@ -66,6 +65,15 @@ class OrderCellsResult(Base):
     def __repr__(self):
         return "result ({})".format(self.id)
 
+class OrderGroup(Base):
+    __tablename__ = "OrderGroup"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    organizationId = Column(Integer, ForeignKey('organization.id'))
+    organization = relationship('Organization', backref="orderGroup")
+    date = Column(BigInteger)
+
 class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
@@ -80,6 +88,10 @@ class Order(Base):
     grid = Column(JSON)
     way = Column(JSON)
     cellCount = Column(Integer)
+    
+    groupId = Column(Integer, ForeignKey("OrderGroup.id"))
+    group = relationship('OrderGroup', backref="orders")
+
 
     def __repr__(self):
         return "<order ({})>".format(self.id)
