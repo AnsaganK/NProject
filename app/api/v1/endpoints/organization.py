@@ -2,6 +2,7 @@ from db import session
 from fastapi import APIRouter, Depends, Header
 from app.models.organization import Organization
 from app.models.user import User
+from app.schemas.user import FullUserSchema
 from app.schemas.organization import OrganizationSchema
 from app.schemas.organizationUser import OrganizationUserSchema
 from app.models.role import Role
@@ -9,7 +10,7 @@ from app.auth.auth_bearer import JWTBearer, decodeJWT
 from app.auth.auth_handler import decodeJWT
 from fastapi.security.http import HTTPBase
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 
@@ -17,7 +18,9 @@ router = APIRouter()
 @router.get("/")
 async def get_organizations():
     query = session.query(Organization).all()
-
+    for i in query:
+        a = i.__dict__
+        a["usersCount"] = session.query(User).join(Organization).filter(Organization.id == a["id"]).count()
     return query
 
 
@@ -25,30 +28,13 @@ async def get_organizations():
 async def get_organization(organization_id: int):# token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
     #print("userId: ", user_id)
-    query = session.query(Organization).filter(Organization.id == organization_id).first()
-
+    query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(selectinload(Organization.user)).filter(Organization.id == organization_id).first()
     if query:
-        a = query.user
+        a = query.__dict__
+        a["usersCount"] = session.query(User).join(Organization).filter(Organization.id == a["id"]).count()
         return query
     return {"error": "Not Found"}
 
-'''
-@router.post("/")
-async def create_organization(organization: OrganizationSchema):
-    query = Organization(name=organization.name, bin=organization.bin, organizationId=organization.organizationId)
-
-    for i in session.query(Organization).all():
-        if i.name == organization.name:
-            return {"error": "A organization with this name has already been created"}
-
-    session.add(query)
-    session.commit()
-
-    last_id = query.id
-    organization = organization.dict()
-
-    return {**organization, "id": last_id}
-'''
 
 @router.put("/{organization_id}")
 async def update_organization(organization_id:int, organization: OrganizationSchema):
@@ -108,3 +94,26 @@ async def create_organization_user(ou: OrganizationUserSchema):
         return {**ou.dict(), "id": lastId}
     else:
         return {"error": "User objects required"}
+
+@router.post("/add_admin")
+async def add_admin(user: FullUserSchema):
+    UserQuery = User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password)
+    OrganizationQuery = session.query(Organization).filter(Organization.id == user.organizationId).first()
+    users = session.query(User).join(Organization).filter(Organization.id == user.organizationId).all()
+    for i in users:
+        if i.email == user.email:
+            return {"error": "Пользователь с такой почтой уже существует"}
+    if not OrganizationQuery:
+        return {"error": "Организация не найдена"}
+    UserQuery.organization = OrganizationQuery
+
+    session.add(UserQuery)
+    session.commit()
+
+    last_id = UserQuery.id
+
+    org_id = user.organizationId
+
+    user = user.dict()
+
+    return {**user,"organization_id": org_id, "id": last_id}

@@ -12,7 +12,10 @@ class Status(Base):
     name = Column(String, unique=True)
 
     role_edit_id = Column(Integer, ForeignKey("roles.id"))
+    role_edit = relationship("Role", backref="status_edit", foreign_keys=[role_edit_id])
 
+    role_selection_id = Column(Integer, ForeignKey("roles.id"))
+    role_selection = relationship("Role", backref="status_selection", foreign_keys=[role_selection_id])
 
     color = Column(String)
 

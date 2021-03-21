@@ -29,13 +29,13 @@ async def get_field(field_id: int):
         return query.__dict__
     return {"error": "Not Found"}
 
-#@router.get("/organization/{organization_id}")
-#async def get_field(organization_id: int):
-#    #query = session.query(Organization).options(selectinload(Organization.fields)).filter(Organization.id == organization_id).all()
-#    query = session.query(Field).join(Organization).filter(Organization.id == organization_id).all()
-#    if query:
-#        return query
-#    return {"error": "Not Found"}
+@router.get("/organization/{organization_id}")
+async def get_field(organization_id: int):
+    #query = session.query(Organization).options(selectinload(Organization.fields)).filter(Organization.id == organization_id).all()
+    query = session.query(Field).join(Organization).filter(Organization.id == organization_id).all()
+    if query:
+        return query
+    return {"error": "Not Found"}
 
 @router.post("/")
 async def create_field(field: FieldSchema):

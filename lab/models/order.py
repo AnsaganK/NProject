@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, DateTime, BigInteger, Boolean, T
 from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy import ForeignKey
+from lab.models.status import Status
 
 OrderElements = Table(
     'OrderElements',
@@ -42,12 +43,30 @@ class OrderCells(Base):
     orderId = Column(Integer, ForeignKey('orders.id'))
     cell = relationship('Cells', backref="order")
     cellId = Column(Integer, ForeignKey('cells.id'))
-    status = Column(String)
-
     date = Column(BigInteger)
+
+    #currentStatusId = Column(Integer, ForeignKey("OrderCellsStatus.id"))
+    #currentStatus = relationship("OrderCellsStatus", backref="cells", foreign_keys=[currentStatusId])
 
     def __repr__(self):
         return "<orderCells ({})>".format(self.id)
+
+class OrderCellsStatus(Base):
+    __tablename__ = "OrderCellsStatus"
+    id = Column(Integer, primary_key=True)
+
+    orderCellsId = Column(Integer, ForeignKey("OrderCells.id"))
+    orderCells = relationship('OrderCells', backref="status", foreign_keys=[orderCellsId])
+
+    statusId = Column(Integer, ForeignKey('status.id'))
+    status = relationship('Status', backref="status_cells", foreign_keys=[statusId])
+
+    miniStatusId = Column(Integer, ForeignKey('MiniStatus.id'))
+    miniStatus = relationship("MiniStatus", backref="mini_status_cells", foreign_keys=[miniStatusId])
+    date = Column(Integer)
+
+    def __repr__(self):
+        return "<OrderCellsStatus ({})>".format(self.id)
 
 
 class OrderCellsResult(Base):

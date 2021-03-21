@@ -1,4 +1,3 @@
-'''
 from db import session
 from fastapi import APIRouter
 from lab.models.mini_status import MiniStatus
@@ -59,5 +58,3 @@ async def delete_order(mini_status_id: int):
         session.commit()
         return {"message": "MiniStatus ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
-
-'''
