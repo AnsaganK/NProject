@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from enum import Enum
-from pydantic.types import Optional
+from pydantic.types import Optional, List
 
 class StatusName(str, Enum):
     planned = "planned"
@@ -28,6 +28,8 @@ status_dict = [
 class StatusSchema(BaseModel):
     name: str
     color: Optional[str] = Field(None)
+    roleEdit: int = Field(None)
+    roleSelect: int = Field(None)
 
 
 class StatusIdSchema(BaseModel):

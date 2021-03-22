@@ -25,9 +25,9 @@ async def get_organizations():
 
 
 @router.get("/{organization_id}")
-async def get_organization(organization_id: int):# token: str = Depends(JWTBearer())):
-    #user_id = decodeJWT(token)
-    #print("userId: ", user_id)
+async def get_organization(organization_id: int, token: str = Depends(JWTBearer())):
+    user_id = decodeJWT(token)
+    print("userId: ", user_id)
     query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(selectinload(Organization.user)).filter(Organization.id == organization_id).first()
     if query:
         a = query.__dict__
@@ -75,10 +75,11 @@ async def create_organization_user(ou: OrganizationUserSchema):
             if i.email == u.email:
                 return {"error": "A user with this email has already been created"}
         if u.role:
+            #print(u.role)
             for i in u.role:
-                userId = int(i.dict()["id"])
+                userId = int(i)
                 role = session.query(Role).filter(Role.id == userId).first()
-                print(ou)
+                #print(ou)
                 #ou = ou.dict()
                 #ou["userObject"]["role"] = []
                 if role:

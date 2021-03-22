@@ -21,14 +21,6 @@ async def get_roles():
     return query
 
 
-@router.get("/{role_id}")
-async def get_roles(role_id: int):
-    query = session.query(Role).filter(Role.id == role_id).first()
-    if query:
-        return query
-    return {"error": "Not Found"}
-
-
 @router.post("/")
 async def create_roles(role: RoleCreateSchema):
     query = Role(name=role.name)
@@ -44,6 +36,16 @@ async def create_roles(role: RoleCreateSchema):
     permission = role.dict()
 
     return {**permission, "id": last_id}
+
+@router.get("/{role_id}")
+async def get_roles(role_id: int):
+    query = session.query(Role).filter(Role.id == role_id).first()
+    if query:
+        return query
+    return {"error": "Not Found"}
+
+
+
 
 
 @router.put("/{role_id}")

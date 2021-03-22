@@ -4,6 +4,10 @@ from pydantic.types import List
 from typing import Optional
 
 
+class OrderCellsStatusSchema(BaseModel):
+    statusId: int
+    miniStatusId: int
+
 class OrderGroupSchema(BaseModel):
     name: Optional[str] = Field(None)
     date: Optional[int] = Field(None)

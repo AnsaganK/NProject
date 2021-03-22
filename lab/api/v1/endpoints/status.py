@@ -2,6 +2,8 @@ from db import session
 from fastapi import APIRouter
 from lab.schemas.status import StatusSchema
 from lab.models.status import Status
+from app.models.role import Role
+
 
 router = APIRouter()
 
@@ -26,6 +28,14 @@ async def create_status(status: StatusSchema):
     for i in session.query(Status).all():
         if i.name == status.name:
             return {"error": "A status with this name has already been created"}
+
+    role = session.query(Role).filter(Role.id == status.roleEdit).first()
+    if role:
+        query.role_edit = role
+
+    role = session.query(Role).filter(Role.id == status.roleSelect).first()
+    if role:
+        query.role_selection = role
 
     session.add(query)
     session.commit()

@@ -63,7 +63,7 @@ class OrderCellsStatus(Base):
 
     miniStatusId = Column(Integer, ForeignKey('MiniStatus.id'))
     miniStatus = relationship("MiniStatus", backref="mini_status_cells", foreign_keys=[miniStatusId])
-    date = Column(Integer)
+    date = Column(BigInteger)
 
     def __repr__(self):
         return "<OrderCellsStatus ({})>".format(self.id)

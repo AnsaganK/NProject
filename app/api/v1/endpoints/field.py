@@ -19,16 +19,6 @@ async def get_fields():
     query = session.query(Field).options(selectinload(Field.organization)).options(selectinload(Field.type)).all()
     return query
 
-
-@router.get("/{field_id}")
-async def get_field(field_id: int):
-    query = session.query(Field).filter(Field.id == field_id).first()
-    print(query.__dict__)
-    if query:
-        a = query.organization
-        return query.__dict__
-    return {"error": "Not Found"}
-
 @router.get("/organization/{organization_id}")
 async def get_field(organization_id: int):
     #query = session.query(Organization).options(selectinload(Organization.fields)).filter(Organization.id == organization_id).all()
@@ -36,6 +26,17 @@ async def get_field(organization_id: int):
     if query:
         return query
     return {"error": "Not Found"}
+
+@router.get("/{field_id}")
+async def get_field(field_id: int):
+    query = session.query(Field).options(selectinload(Field.type)).filter(Field.id == field_id).first()
+    print(query.__dict__)
+    if query:
+        a = query.organization
+        return query.__dict__
+    return {"error": "Not Found"}
+
+
 
 @router.post("/")
 async def create_field(field: FieldSchema):

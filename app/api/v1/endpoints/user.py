@@ -1,6 +1,7 @@
 from db import session
 from fastapi import APIRouter
 
+from sqlalchemy.orm import selectinload
 from app.schemas.user import UserSchema
 from app.schemas.UserRole import UserRoleSchema
 from app.models.user import User
@@ -9,9 +10,27 @@ from app.models.role import Role
 router = APIRouter()
 
 
+@router.post("")
+async def create_user(userSchema: UserSchema):
+    users = session.query(User).all()
+    for i in users:
+        if i.email == userSchema.email:
+            return {"error": "A user with this email already been created"}
+    user = User(firstName=userSchema.firstName, lastName=userSchema.lastName, password=userSchema.password, email=userSchema.email)
+    for i in userSchema.role:
+        role = session.query(Role).filter(Role.id == i).first()
+        if role:
+            user.roles.append(role)
+
+    session.add(user)
+    session.commit()
+    last_id = user.id
+
+    return {**userSchema.dict(), "id": last_id}
+
 @router.get("")
 def get_all():
-    query = session.query(User).all()
+    query = session.query(User).options(selectinload(User.roles)).all()
     return query
 
 
@@ -28,12 +47,9 @@ async def user_update(user_id: int, user: UserSchema):
     query = session.query(User).filter(User.id == user_id).first()
     if user:
         for i in session.query(User).all():
-            if i.name == user.username and i.id != user_id:
-                return {"error": "A user with this name has already been created"}
             if i.email == user.email and i.id != user_id:
                 return {"error": "A user with this email already been created"}
 
-        query.name = user.username
         query.firstName = user.firstName
         query.lastName = user.lastName
         query.email = user.email

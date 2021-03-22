@@ -22,10 +22,11 @@ class UserSchema(BaseModel):
     lastName: str = Field(...)
     email: EmailStr = Field(...)
     password: str = Field(...)
-    role: Optional[List[RoleForUserSchema]] = Field(None)
+    role: Optional[List[int]] = Field(None)
 
 
 class UserLoginSchema(BaseModel):
-    id: int = Field(None)
+    #id: int = Field(None)
     email: EmailStr = Field(...)
     password: str = Field(...)
+
