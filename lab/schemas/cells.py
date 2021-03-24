@@ -1,6 +1,10 @@
 from pydantic import BaseModel
+from pydantic.types import List
+
+class ResultList(BaseModel):
+    elementId: int
+    value: float
 
 
 class OrderCellsResultSchema(BaseModel):
-    elementId: int
-    result: float
+    results: List[ResultList]

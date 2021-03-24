@@ -38,7 +38,7 @@ def get_all():
 async def user_detail(user_id: int):
     user = session.query(User).filter(User.id == user_id).first()
     if user:
-        return {"user_id": user.id, "organization": user.organization, "user_name": user.username}
+        return {"id": user.id, "organizationId": user.organization, "email": user.email}
     return {"error": "There is no user with this ID"}
 
 

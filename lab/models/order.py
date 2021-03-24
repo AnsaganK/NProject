@@ -5,6 +5,13 @@ import datetime
 from sqlalchemy import ForeignKey
 from lab.models.status import Status
 
+OrderGroupElements = Table(
+    'OrderGroupElements',
+    Base.metadata,
+    Column('orderGroupId', Integer, ForeignKey('OrderGroup.id')),
+    Column('elementId', Integer, ForeignKey('elements.id'))
+)
+
 OrderElements = Table(
     'OrderElements',
     Base.metadata,
@@ -91,6 +98,7 @@ class OrderGroup(Base):
     name = Column(String)
     organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="orderGroup")
+    elements = relationship('Elements', secondary=OrderGroupElements, backref="orderGroups")
     date = Column(BigInteger)
 
 class Order(Base):

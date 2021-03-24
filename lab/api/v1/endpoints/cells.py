@@ -2,7 +2,7 @@ from db import session
 from fastapi import APIRouter, Query
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements
-from lab.models.order import Order, OrderCells, OrderCellsResult
+from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
 from lab.schemas.cells import OrderCellsResultSchema
 import time
@@ -26,10 +26,21 @@ async def get_results():
 
 @router.get("/results/{order_id}")
 async def get_cells_for_order(order_id: int):
-    cells = session.query(OrderCellsResult).join(OrderCells).filter(OrderCells.orderId == order_id).all()
-    for i in cells:
-        a = i.orderCell
-    return cells
+    cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(OrderCells.orderId == order_id).all()
+    dic = {"cells":[]}
+    print(cells)
+    for cell in cells:
+        cellCode = cell.orderCell.cell.code
+
+        cellDic = {"cellCode": cell.orderCell.cell.code, "results":[]}
+        #if dic["cells"]
+        for c in cells:
+            if c.orderCell.cell.code == cellCode:
+                el = c.element
+                cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
+        if cellDic not in dic["cells"]:
+            dic["cells"].append(cellDic)
+    return dic
 
 #@router.get("/{order_id}")
 #async def get_cells_for_order(order_id: int):
@@ -39,29 +50,42 @@ async def get_cells_for_order(order_id: int):
 
 @router.get("/{order_id}")
 async def get_cells_for_order(order_id: int):
-    print(OrderCells.status)
     #orderCells = session.query(OrderCells).filter(OrderCells.status == status).all()
     #orderCells = session.query(OrderCells).join(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
     cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.orderId == order_id).all()
+    for i in cells:
+        st = session.query(OrderCellsStatus).join(OrderCells).filter(OrderCells.id == i.id).order_by(OrderCellsStatus.id.desc()).first()
+        if st:
+            if st.status:
+                statusName = st.status.name
+            else:
+                statusName = None
+            if st.miniStatus:
+                miniStatusName = st.miniStatus.name
+            else:
+                miniStatusName = None
+            i.__dict__["currentStatus"] = {"statusName":statusName, "miniStatusName": miniStatusName}
     return cells
 
 @router.post("/result/{order_id}/{cell_code}")
 async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResultSchema: OrderCellsResultSchema):
+    order = session.query(Order).filter(Order.id == order_id).first()
     cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == cell_code).first()
-    element = session.query(Elements).filter(Elements.id == orderCellsResultSchema.elementId).first()
-    for i in session.query(OrderCellsResult).all():
-        if i.orderCell == cell and i.element == element:
-            return {"error": "A result with this name has already been created"}
-    if cell and element:
-        date = int(time.time())*1000
-        result = OrderCellsResult(orderCell=cell, element=element, result=orderCellsResultSchema.result, date=date)
-        session.add(result)
-        session.commit()
+    for r in orderCellsResultSchema.results:
+        element = session.query(Elements).filter(Elements.id == r.elementId).first()
+        if element not in order.elements:
+            return {"error": "Данного элемента нет в поле этой ячейки"}
+        for i in session.query(OrderCellsResult).all():
+            if i.orderCell == cell and i.element == element:
+                return {"error": "Для данной ячейки уже существутет запись с этим элементом"}
+        if cell and element:
+            date = int(time.time())*1000
+            result = OrderCellsResult(orderCell=cell, element=element, result=r.value, date=date)
+            session.add(result)
+    session.commit()
+    orderCellsResultSchema = orderCellsResultSchema.dict()
 
-        lastId = result.id
-        orderCellsResultSchema = orderCellsResultSchema.dict()
-
-        return {**orderCellsResultSchema, "id": lastId}
+    return {**orderCellsResultSchema}
 
 @router.get("/{order_id}/{cell_code}")
 async def get_cells(order_id: int, cell_code: int):
