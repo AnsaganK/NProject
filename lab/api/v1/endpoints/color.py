@@ -1,7 +1,7 @@
 from db import session
 from fastapi import APIRouter, Query
 from lab.models.elements import Color
-from lab.schemas.elements import ColorSchema
+from lab.schemas.elements import ColorSchema, NewColorSchema
 import time
 
 router = APIRouter()
@@ -13,7 +13,7 @@ async def get_elements():
     return query
 
 
-@router.get("/{color_id}")
+@router.get("/{color_id}", response_model=NewColorSchema)
 async def get_element(color_id: int):
     query = session.query(Color).filter(Color.id == color_id).first()
     if query:

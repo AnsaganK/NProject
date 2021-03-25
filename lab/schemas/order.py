@@ -13,6 +13,9 @@ class OrderGroupSchema(BaseModel):
     date: Optional[int] = Field(None)
     organizationId: int
 
+    class Config:
+        orm_mode = True
+
 class OrderSchema(BaseModel):
     name: Optional[str] = Field(None)
     description: Optional[str] = Field(None)
@@ -24,3 +27,6 @@ class OrderSchema(BaseModel):
     way: dict
     cellCount: int
     orderGroupId: Optional[int] = Field(None)
+
+    class Config:
+        orm_mode = True

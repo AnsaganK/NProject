@@ -4,9 +4,18 @@ from pydantic import Field
 from typing import Optional, List
 
 
+class NewColorSchema(BaseModel):
+    name: Optional[str] = Field(None)
+
+    class Config:
+        orm_mode = True
+
 class ColorSchema(BaseModel):
     name: Optional[str] = Field(None)
     code: str
+
+    class Config:
+        orm_mode = True
 
 class RangeSchema(BaseModel):
     name: str
@@ -26,3 +35,6 @@ class ElementsSchema(BaseModel):
     date: Optional[int] = Field(None)
     standard: bool = Field(default=False)
     types: List[TypeSchema]
+
+    class Config:
+        orm_mode = True

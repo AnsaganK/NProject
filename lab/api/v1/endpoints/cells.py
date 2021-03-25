@@ -1,7 +1,7 @@
 from db import session
 from fastapi import APIRouter, Query
 from lab.models.cells import Cells, CellsHistory
-from lab.models.elements import Elements
+from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
 from lab.schemas.cells import OrderCellsResultSchema
@@ -27,19 +27,73 @@ async def get_results():
 @router.get("/results/{order_id}")
 async def get_cells_for_order(order_id: int):
     cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(OrderCells.orderId == order_id).all()
-    dic = {"cells":[]}
-    print(cells)
+    dic = []
     for cell in cells:
         cellCode = cell.orderCell.cell.code
-
         cellDic = {"cellCode": cell.orderCell.cell.code, "results":[]}
-        #if dic["cells"]
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
                 cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
-        if cellDic not in dic["cells"]:
-            dic["cells"].append(cellDic)
+        if cellDic not in dic:
+            dic.append(cellDic)
+    return dic
+
+@router.get("/resultColor/{order_id}")
+async def resultColor(order_id: int):
+    all_els = []
+    order = session.query(Order).filter(Order.id == order_id).first()
+    for el in order.elements:
+        onlyElement = {"element": el.name,"elementId": el.id, "result":[]}
+        cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(
+            OrderCells.orderId == order_id).filter(OrderCellsResult.elementId == el.id).all()
+        for cell in cells:
+            cellCode = cell.orderCell.cell.code
+            for c in cells:
+                if c.orderCell.cell.code == cellCode:
+                    pass
+        dic = []
+        types = session.query(ElementType).join(Elements).filter(Elements.id == el.id).all()
+        for i in types:
+            elDic = {"name": i.type.name, "id": i.type.id, "cells": []}
+            for cell in cells:
+                cellCode = cell.orderCell.cell.code
+                cellResult = cell.result
+                cellColor = changeColor(i.color, cellResult)
+                colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
+                elDic["cells"].append(colorDic)
+            dic.append(elDic)
+            onlyElement["result"].append(dic)
+        all_els.append(onlyElement)
+    return all_els
+
+def changeColor(elementColor, value):
+    for i in elementColor:
+        if i.rangeColor.range.of<value and i.rangeColor.range.to>=value:
+            return i.rangeColor.color.code
+    return None
+
+@router.get("/resultColor/{order_id}/{element_id}")
+async def resultColor(order_id: int, element_id: int):
+    cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(
+        OrderCells.orderId == order_id).filter(OrderCellsResult.elementId == element_id).all()
+    for cell in cells:
+
+        cellCode = cell.orderCell.cell.code
+        for c in cells:
+            if c.orderCell.cell.code == cellCode:
+                pass
+    dic = []
+    types = session.query(ElementType).join(Elements).filter(Elements.id == element_id).all()
+    for i in types:
+        elDic = {"name": i.type.name, "id": i.type.id, "cells": []}
+        for cell in cells:
+            cellCode = cell.orderCell.cell.code
+            cellResult = cell.result
+            cellColor = changeColor(i.color, cellResult)
+            colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
+            elDic["cells"].append(colorDic)
+        dic.append(elDic)
     return dic
 
 #@router.get("/{order_id}")
@@ -75,13 +129,15 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
         element = session.query(Elements).filter(Elements.id == r.elementId).first()
         if element not in order.elements:
             return {"error": "Данного элемента нет в поле этой ячейки"}
-        for i in session.query(OrderCellsResult).all():
-            if i.orderCell == cell and i.element == element:
-                return {"error": "Для данной ячейки уже существутет запись с этим элементом"}
+        isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
+        #for i in session.query(OrderCellsResult).all():
+        #    if i.orderCell == cell and i.element == element:
+        #        return {"error": "Для данной ячейки уже существутет запись с этим элементом"}
         if cell and element:
             date = int(time.time())*1000
-            result = OrderCellsResult(orderCell=cell, element=element, result=r.value, date=date)
-            session.add(result)
+            if not isElement:
+                result = OrderCellsResult(orderCell=cell, element=element, result=r.value, date=date)
+                session.add(result)
     session.commit()
     orderCellsResultSchema = orderCellsResultSchema.dict()
 

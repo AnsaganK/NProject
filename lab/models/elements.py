@@ -47,7 +47,7 @@ class ElementColor(Base):
     rangeColor = relationship("RangeColor", cascade="all,delete",  backref="element")
 
     def __repr__(self):
-        return self.id
+        return "<ElementColor ({})>".format(self.id)
 
 class Color(Base):
     __tablename__ = "colors"

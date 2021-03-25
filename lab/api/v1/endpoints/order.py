@@ -33,6 +33,7 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
             return orderCells
     return {"error": "У вас нет такой роли"}
 
+
 @router.get("/groups/{group_id}")
 async def get_order_group_id(group_id: int):
     #query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
@@ -42,6 +43,19 @@ async def get_order_group_id(group_id: int):
     return {"error": "Not Found"}
 
 from sqlalchemy.orm import defer
+
+@router.get("/organization/{organization_id}")
+async def get_order_group_organization(organization_id: int):
+    query = session.query(OrderGroup).join(Organization).filter(Organization.id == organization_id).all()
+    for i in query:
+        a = i.__dict__
+        zero = 0
+        for j in session.query(Order).session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]):
+            c = len(j.cells)
+            zero += c
+        a["cellsCount"] = zero
+        a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
+    return query
 
 @router.get("/{orderId}/{cellsCode}")
 async def get_status_for_order_cells(orderId: int, cellsCode: int):
@@ -68,21 +82,20 @@ async def create_status_for_Order_cells(orderId: int, cellsCode: int, ocss: Orde
     if not miniStatus:
         return {"error": "Not Found MiniStatus"}
 
-    print(cell)
-    print(status)
-    print(miniStatus)
     OCSS = OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time()*1000))
 
 
-    print(OCSS)
-
     session.add(OCSS)
     session.commit()
-    print(OCSS.id)
-    cell = cell.__dict__
-    print(status.__dict__)
-    print(miniStatus.__dict__)
-    return {**cell, "status": status.name, "miniStatus": miniStatus.name}
+
+    currentStatus = session.query(OrderCellsStatus).join(OrderCells).join(Cells).filter(
+        OrderCells.orderId == orderId).filter(Cells.code == cellsCode).order_by(OrderCellsStatus.id.desc()).first()
+    statuses = session.query(OrderCellsStatus).options(selectinload(OrderCellsStatus.status)).options(
+        selectinload(OrderCellsStatus.miniStatus)).join(OrderCells).join(Cells).filter(
+        OrderCells.orderId == orderId).filter(Cells.code == cellsCode).all()
+
+
+    return {"currentStatus": currentStatus, "history": statuses}
 
 @router.post("/status/")
 async def get_cells_for_order(status: StatusIdSchema):
@@ -111,6 +124,9 @@ async def get_order_group():
     return query
 
 
+
+
+
 @router.get("/{order_id}")
 async def get_order(order_id: int):
     query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elements)).options(selectinload(Order.elements)).filter(Order.id == order_id).first()
@@ -121,19 +137,6 @@ async def get_order(order_id: int):
                 print(j)
         return query
     return {"error": "Not Found"}
-
-@router.get("/organization/{organization_id}")
-async def get_order_group_organization(organization_id: int):
-    query = session.query(OrderGroup).join(Organization).filter(Organization.id == organization_id).all()
-    for i in query:
-        a = i.__dict__
-        zero = 0
-        for j in session.query(Order).session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]):
-            c = len(j.cells)
-            zero += c
-        a["cellsCount"] = zero
-        a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
-    return query
 
 
 
