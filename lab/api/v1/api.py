@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends
 from app.auth.auth_bearer import JWTBearer
 
 from lab.api.v1.endpoints import elements, order, status, mini_status, cells, color, elementTypes
-from app.api.v1.endpoints import organization, user, field, typesForField, role, login
+from app.api.v1.endpoints import organization, user, field, typesForField, role, login, season, culture, fieldCultureSeason, irrigationType, tillage
 api_router = APIRouter()
 
 api_router.include_router(login.router, tags=["Авторизация и Регистрация"], prefix="/auth")
+api_router.include_router(season.router, tags=["Сезоны"], prefix="/seasons")
+api_router.include_router(culture.router, tags=["Культуры"], prefix="/cultures")
+api_router.include_router(irrigationType.router, tags=["Тип орошения"], prefix="/irrigation_types")
+api_router.include_router(tillage.router, tags=["Обработка почвы"], prefix="/tillages")
+api_router.include_router(fieldCultureSeason.router, tags=["Севооборот"], prefix="/crop_rotation")
 api_router.include_router(elementTypes.router, tags=["Типы элементов"], prefix="/elementTypes") #dependencies=[Depends(JWTBearer())])
 api_router.include_router(elements.router, tags=["Элементы"], prefix="/elements") #dependencies=[Depends(JWTBearer())])
 api_router.include_router(organization.router, tags=["Организации"], prefix="/organizations") #dependencies=[Depends(JWTBearer())])
