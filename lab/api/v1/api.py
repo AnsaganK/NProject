@@ -2,10 +2,13 @@ from fastapi import APIRouter, Depends
 from app.auth.auth_bearer import JWTBearer
 
 from lab.api.v1.endpoints import elements, order, status, mini_status, cells, color, elementTypes
-from app.api.v1.endpoints import organization, user, field, typesForField, role, login, season, culture, fieldCultureSeason, irrigationType, tillage
+from app.api.v1.endpoints import organization, user, field, typesForField, role, login, season, culture, fieldCultureSeason, irrigationType, tillage, workType, workSubType, work
 api_router = APIRouter()
 
 api_router.include_router(login.router, tags=["Авторизация и Регистрация"], prefix="/auth")
+api_router.include_router(work.router, tags=["Работы"], prefix="/works")
+api_router.include_router(workType.router, tags=["Типы работ"], prefix="/work_types")
+api_router.include_router(workSubType.router, tags=["Подтипы работ"], prefix="/work_subtypes")
 api_router.include_router(season.router, tags=["Сезоны"], prefix="/seasons")
 api_router.include_router(culture.router, tags=["Культуры"], prefix="/cultures")
 api_router.include_router(irrigationType.router, tags=["Тип орошения"], prefix="/irrigation_types")

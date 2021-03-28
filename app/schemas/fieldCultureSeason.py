@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from pydantic.types import Optional
-
+from app.schemas.field import FieldSchema
 
 class FieldCultureSeasonSchema(BaseModel):
     fieldId: int

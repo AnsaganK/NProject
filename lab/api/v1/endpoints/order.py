@@ -24,8 +24,8 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
     print(decode)
     for i in decode["roles"]:
         role = session.query(Role).filter(Role.id == i["id"]).first()
-        if role.id == role_id:
-            status = session.query(Status).filter(Status.role_selection_id == role.id).first()
+        if role.id == role_id or role.name == "admin":
+            status = session.query(Status).filter(Status.role_selection_id == role_id).first()
             miniStatus = session.query(MiniStatus).filter(MiniStatus.name == "Готово").first()
             orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
             print(status)

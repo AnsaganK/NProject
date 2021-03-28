@@ -62,7 +62,7 @@ async def create_field_culture_season(fcs: FieldCultureSeasonSchema):
 async def get_crop_rotation_for_field(field_id: int):
     field = session.query(Field).get(field_id)
     query = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.culture)).options(selectinload(FieldCultureSeason.season)).options(selectinload(FieldCultureSeason.irrigationType)).options(selectinload(FieldCultureSeason.tillage)).filter(FieldCultureSeason.fieldId == field_id).all()
-    return {"field":field, "cropRotations": query}
+    return query
 
 #@router.get("/{field_id}")
 #async def get_field_culture_season(field_id: int):
