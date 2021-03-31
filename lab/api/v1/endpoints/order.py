@@ -111,7 +111,7 @@ async def get_cells_for_order(status: StatusIdSchema):
 
 @router.get("/groups")
 async def get_order_group():
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).all()
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(selectinload(OrderGroup.organization)).all()
     for i in query:
         a = i.__dict__
         zero = 0
@@ -122,6 +122,20 @@ async def get_order_group():
         a["cellsCount"] = zero
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return query
+
+@router.get("/groups_for_mobile")
+async def get_order_group():
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.organization)).all()
+    for i in query:
+        a = i.__dict__
+        zero = 0
+        for j in session.query(Order).session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]):
+            c = len(j.cells)
+            zero+=c
+
+        a["cellsCount"] = zero
+        a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
+    return {"orders": query}
 
 
 

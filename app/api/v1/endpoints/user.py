@@ -36,9 +36,9 @@ def get_all():
 
 @router.get("/{user_id}")
 async def user_detail(user_id: int):
-    user = session.query(User).filter(User.id == user_id).first()
+    user = session.query(User).options(selectinload(User.organization)).filter(User.id == user_id).first()
     if user:
-        return {"id": user.id, "organizationId": user.organization, "email": user.email}
+        return user
     return {"error": "There is no user with this ID"}
 
 

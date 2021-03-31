@@ -15,7 +15,7 @@ router = APIRouter()
 @router.get("/me")
 async def auth_me(token: str = Depends(JWTBearer())):
     decode = decodeJWT(token)
-    print(decode)
+    #print(decode)
     if "id" in decode:
         return decode
     else:
