@@ -15,6 +15,7 @@ import time
 from sqlalchemy.orm import selectinload, load_only
 from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_handler import decodeJWT
+from sqlalchemy import desc
 
 router = APIRouter()
 
@@ -125,7 +126,7 @@ async def get_order_group():
 
 @router.get("/groups_for_mobile")
 async def get_order_group():
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.organization)).all()
+    query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).options(selectinload(OrderGroup.organization)).options(selectinload(OrderGroup.orders)).all()
     for i in query:
         a = i.__dict__
         zero = 0

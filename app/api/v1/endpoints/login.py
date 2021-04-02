@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from fastapi import Body
+from fastapi import Body, Response, status
 
 from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_handler import signJWT
@@ -45,10 +45,13 @@ async def create_user(user: UserSchema = Body(...)):
     return {**user.dict(), "id": last_id}
 
 
-@router.post("/user/login")
-async def user_login(user: UserLoginSchema = Body(...)):
+@router.post("/user/login", status_code=200)
+async def user_login(*, user: UserLoginSchema = Body(...), response:Response):
+    print(user)
     if check_user(user):
         return signJWT(check_user(user))
+
+    response.status_code = status.HTTP_404_NOT_FOUND
     return {
         "error": "Неправильный логин или пароль"
     }
