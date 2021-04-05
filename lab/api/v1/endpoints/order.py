@@ -19,6 +19,26 @@ from sqlalchemy import desc
 
 router = APIRouter()
 
+
+def parse_data(geoJson):
+    data = geoJson["features"][0]["geometry"]["coordinates"]
+    lst = []
+    for i in data:
+        a = [round(i[0],7), round(i[1],7)]
+        lst.append(a)
+    #print("lst",lst)
+    #geoJson["features"][0]["geometry"]["coordinates"] = lst
+    #print(geoJson)
+    return geoJson
+
+@router.get("/geojson/{order_id}")
+async def get_geojson_for_field(order_id: int):
+    order = session.query(Order).get(order_id)
+    #print(order.way)
+    #a = parse_data(order.way)
+    return order.grid
+
+
 @router.get("/me/{role_id}")
 async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
     decode = decodeJWT(token)
@@ -28,7 +48,8 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
         if role.id == role_id or role.name == "admin":
             status = session.query(Status).filter(Status.role_selection_id == role_id).first()
             miniStatus = session.query(MiniStatus).filter(MiniStatus.name == "Готово").first()
-            orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
+            orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(
+                OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
             print(status)
             print(orderCells)
             return orderCells
@@ -37,13 +58,16 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
 
 @router.get("/groups/{group_id}")
 async def get_order_group_id(group_id: int):
-    #query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(selectinload(OrderGroup.orders)).filter(OrderGroup.id == group_id).first()
+    # query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(
+        selectinload(OrderGroup.orders)).filter(OrderGroup.id == group_id).first()
     if query:
         return query
     return {"error": "Not Found"}
 
+
 from sqlalchemy.orm import defer
+
 
 @router.get("/organization/{organization_id}")
 async def get_order_group_organization(organization_id: int):
@@ -58,20 +82,27 @@ async def get_order_group_organization(organization_id: int):
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return query
 
+
 @router.get("/{orderId}/{cellsCode}")
 async def get_status_for_order_cells(orderId: int, cellsCode: int):
-    currentStatus = session.query(OrderCellsStatus).join(OrderCells).join(Cells).filter(OrderCells.orderId == orderId).filter(Cells.code == cellsCode).order_by(OrderCellsStatus.id.desc()).first()
-    statuses = session.query(OrderCellsStatus).options(selectinload(OrderCellsStatus.status)).options(selectinload(OrderCellsStatus.miniStatus)).join(OrderCells).join(Cells).filter(OrderCells.orderId == orderId).filter(Cells.code == cellsCode).all()
-    return {"currentStatus":currentStatus, "history":statuses}
+    currentStatus = session.query(OrderCellsStatus).join(OrderCells).join(Cells).filter(
+        OrderCells.orderId == orderId).filter(Cells.code == cellsCode).order_by(OrderCellsStatus.id.desc()).first()
+    statuses = session.query(OrderCellsStatus).options(selectinload(OrderCellsStatus.status)).options(
+        selectinload(OrderCellsStatus.miniStatus)).join(OrderCells).join(Cells).filter(
+        OrderCells.orderId == orderId).filter(Cells.code == cellsCode).all()
+    return {"currentStatus": currentStatus, "history": statuses}
+
 
 @router.get("/order_cells_status")
 async def get_order_cells_status():
     OCSS = session.query(OrderCellsStatus).all()
     return OCSS
 
+
 @router.post("/{orderId}/{cellsCode}")
 async def create_status_for_Order_cells(orderId: int, cellsCode: int, ocss: OrderCellsStatusSchema):
-    cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == orderId).filter(Cells.code == cellsCode).first()
+    cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == orderId).filter(
+        Cells.code == cellsCode).first()
     status = session.query(Status).filter(Status.id == ocss.statusId).first()
     miniStatus = session.query(MiniStatus).filter(MiniStatus.id == ocss.miniStatusId).first()
 
@@ -83,8 +114,7 @@ async def create_status_for_Order_cells(orderId: int, cellsCode: int, ocss: Orde
     if not miniStatus:
         return {"error": "Not Found MiniStatus"}
 
-    OCSS = OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time()*1000))
-
+    OCSS = OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time() * 1000))
 
     session.add(OCSS)
     session.commit()
@@ -95,56 +125,58 @@ async def create_status_for_Order_cells(orderId: int, cellsCode: int, ocss: Orde
         selectinload(OrderCellsStatus.miniStatus)).join(OrderCells).join(Cells).filter(
         OrderCells.orderId == orderId).filter(Cells.code == cellsCode).all()
 
-
     return {"currentStatus": currentStatus, "history": statuses}
+
 
 @router.post("/status/")
 async def get_cells_for_order(status: StatusIdSchema):
     print(status)
     print(OrderCells)
-    #orderCells = session.query(OrderCells).filter(OrderCells.status == status).all()
-    #orderCells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
-    #cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
+    # orderCells = session.query(OrderCells).filter(OrderCells.status == status).all()
+    # orderCells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
+    # cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.status == status).all()
     orderCells = session.query(OrderCells).join(Order).filter(OrderCells.status == status.status).subquery()
     orders = session.query(Order).join(orderCells).filter(OrderCells.orderId == Order.id).all()
     print(orders)
     return orders
 
+
 @router.get("/groups")
 async def get_order_group():
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(selectinload(OrderGroup.organization)).all()
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(
+        selectinload(OrderGroup.organization)).all()
     for i in query:
         a = i.__dict__
         zero = 0
         for j in session.query(Order).session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]):
             c = len(j.cells)
-            zero+=c
+            zero += c
 
         a["cellsCount"] = zero
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return query
 
+
 @router.get("/groups_for_mobile")
 async def get_order_group():
-    query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).options(selectinload(OrderGroup.organization)).options(selectinload(OrderGroup.orders)).all()
+    query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).options(
+        selectinload(OrderGroup.organization)).options(selectinload(OrderGroup.orders)).all()
     for i in query:
         a = i.__dict__
         zero = 0
         for j in session.query(Order).session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]):
             c = len(j.cells)
-            zero+=c
+            zero += c
 
         a["cellsCount"] = zero
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return {"orders": query}
 
 
-
-
-
 @router.get("/{order_id}")
 async def get_order(order_id: int):
-    query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elements)).options(selectinload(Order.elements)).filter(Order.id == order_id).first()
+    query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elements)).options(
+        selectinload(Order.elements)).filter(Order.id == order_id).first()
     if query:
         for i in query.elements:
             print(i.types)
@@ -152,7 +184,6 @@ async def get_order(order_id: int):
                 print(j)
         return query
     return {"error": "Not Found"}
-
 
 
 @router.delete("/groups/{group_id}")
@@ -165,14 +196,15 @@ async def get_order_group_id_delete(group_id: int):
         return {"error": "OrderGroup ({}) deleted".format(query.id)}
     return {"error": "Not Found Order Group"}
 
+
 @router.post("/")
 async def create_order(order: OrderSchema):
-    date = int(time.time())*1000
+    date = int(time.time()) * 1000
     query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid,
                   cellCount=order.cellCount, way=order.way)
 
     if not query.date:
-        query.date = int(time.time())*1000
+        query.date = int(time.time()) * 1000
 
     field = session.query(Field).filter(Field.id == order.fieldId).first()
     if not field:
@@ -180,9 +212,9 @@ async def create_order(order: OrderSchema):
 
     orderQuery = session.query(OrderGroup).filter(OrderGroup.id == order.orderGroupId).first()
     if orderQuery:
-        #query.organization = orderQuery.organization
+        # query.organization = orderQuery.organization
 
-        #orderGroupsField = session.query(Field).join(Organization).join(OrderGroup).filter(OrderGroup.id == orderQuery.id).all()
+        # orderGroupsField = session.query(Field).join(Organization).join(OrderGroup).filter(OrderGroup.id == orderQuery.id).all()
         for j in session.query(Order).join(OrderGroup).filter(OrderGroup.id == orderQuery.id).all():
             print(j)
             for k in session.query(Field).join(Order).filter(Order.id == j.id).all():
@@ -194,7 +226,8 @@ async def create_order(order: OrderSchema):
         organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
         if not organization:
             return {"error": "Not Found Organization"}
-        orderGroup = OrderGroup(name=organization.name+" | "+str(date)+" | "+str(organization.id), date=date, organization=organization)
+        orderGroup = OrderGroup(name=organization.name + " | " + str(date) + " | " + str(organization.id), date=date,
+                                organization=organization)
 
         for i in order.elements:
             element = session.query(Elements).filter(Elements.id == i).first()
@@ -210,13 +243,13 @@ async def create_order(order: OrderSchema):
         if element:
             query.elements.append(element)
     status = session.query(Status).filter(Status.name == "planned").first()
-    for i in range(1, order.cellCount+1):
+    for i in range(1, order.cellCount + 1):
         cell = Cells(code=i)
-        date = int(time.time())*1000
+        date = int(time.time()) * 1000
         orderCells = OrderCells(order=query, cell=cell, date=date)
         session.add(orderCells)
         if status:
-            OCS = OrderCellsStatus(orderCells=orderCells, status=status, date=int(time.time())*1000)
+            OCS = OrderCellsStatus(orderCells=orderCells, status=status, date=int(time.time()) * 1000)
             session.add(OCS)
     session.add(query)
     session.commit()
@@ -236,7 +269,7 @@ async def update_order(order_id: int, order: OrderSchema):
         if order.date:
             query.date = order.date
         else:
-            query.date = int(time.time())*1000
+            query.date = int(time.time()) * 1000
         query.grid = order.grid
         query.cellCount = order.cellCount
         return {"message": "Order ({}) updated".format(query.name)}
@@ -251,5 +284,3 @@ async def delete_order(order_id: int):
         session.commit()
         return {"message": "Order ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
-
-

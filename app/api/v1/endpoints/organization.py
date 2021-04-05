@@ -1,16 +1,19 @@
-from db import session
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends,Body
+from sqlalchemy.orm import selectinload
+from sqlalchemy import desc
+
+from app.auth.auth_bearer import JWTBearer
+from app.auth.auth_handler import decodeJWT
+from app.models.cars import Car
 from app.models.organization import Organization
+from app.models.role import Role
+from app.models.season import Season
 from app.models.user import User
-from app.schemas.user import FullUserSchema
 from app.schemas.organization import OrganizationSchema
 from app.schemas.organizationUser import OrganizationUserSchema
-from app.models.role import Role
-from app.auth.auth_bearer import JWTBearer, decodeJWT
-from app.auth.auth_handler import decodeJWT
-from fastapi.security.http import HTTPBase
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import selectinload
+from app.schemas.season import SeasonIdSchema
+from app.schemas.user import FullUserSchema
+from db import session
 
 router = APIRouter()
 
@@ -25,19 +28,26 @@ async def get_organizations():
 
 
 @router.get("/{organization_id}")
-async def get_organization(organization_id: int, token: str = Depends(JWTBearer())):
-    user_id = decodeJWT(token)
-    print("userId: ", user_id)
-    query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(selectinload(Organization.user)).filter(Organization.id == organization_id).first()
+async def get_organization(organization_id: int):#, token: str = Depends(JWTBearer())):
+    #user_id = decodeJWT(token)
+    #print("userId: ", user_id)
+    query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(
+        selectinload(Organization.user)).filter(Organization.id == organization_id).first()
     if query:
         a = query.__dict__
         a["usersCount"] = session.query(User).join(Organization).filter(Organization.id == a["id"]).count()
         return query
     return {"error": "Not Found"}
 
+@router.get("/selectedSeason/{organization_id}")
+async def get_selected_season(organization_id: int):
+    organization = session.query(Organization).filter(Organization.id == organization_id).first()
+    if organization:
+        return organization.selectedSeason
+    return {"error": "Объект не найден"}
 
 @router.put("/{organization_id}")
-async def update_organization(organization_id:int, organization: OrganizationSchema):
+async def update_organization(organization_id: int, organization: OrganizationSchema):
     query = session.query(Organization).filter(Organization.id == organization_id).first()
     for i in session.query(Organization).all():
         if i.name == organization.name and i.id != query.id:
@@ -50,7 +60,7 @@ async def update_organization(organization_id:int, organization: OrganizationSch
 
 
 @router.delete("/{organization_id}")
-async def delete_organization(organization_id:int):
+async def delete_organization(organization_id: int):
     query = session.query(Organization).filter(Organization.id == organization_id).first()
     if query:
         session.delete(query)
@@ -58,11 +68,11 @@ async def delete_organization(organization_id:int):
         return {"message": "Organization ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
 
+
 @router.post("/create_admin")
 async def create_organization_user(ou: OrganizationUserSchema):
-    print(ou)
     organizationQuery = Organization(name=ou.organization.name, bin=ou.organization.bin)
-
+    season = session.query(Season).order_by(desc(Season.id)).first()
     for i in session.query(Organization).all():
         if i.name == ou.organization.name:
             return {"error": "A organization with this name has already been created"}
@@ -75,17 +85,18 @@ async def create_organization_user(ou: OrganizationUserSchema):
             if i.email == u.email:
                 return {"error": "A user with this email has already been created"}
         if u.role:
-            #print(u.role)
+            # print(u.role)
             for i in u.role:
                 userId = int(i)
                 role = session.query(Role).filter(Role.id == userId).first()
-                #print(ou)
-                #ou = ou.dict()
-                #ou["userObject"]["role"] = []
+                # print(ou)
+                # ou = ou.dict()
+                # ou["userObject"]["role"] = []
                 if role:
-                    #ou["userObject"]["role"].append({"id": userId})
+                    # ou["userObject"]["role"].append({"id": userId})
                     userQuery.roles.append(role)
-        
+
+        organizationQuery.selectedSeason = season
         userQuery.organization = organizationQuery
         session.add(userQuery)
         session.commit()
@@ -95,6 +106,7 @@ async def create_organization_user(ou: OrganizationUserSchema):
         return {**ou.dict(), "id": lastId}
     else:
         return {"error": "User objects required"}
+
 
 @router.post("/add_admin")
 async def add_admin(user: FullUserSchema):
@@ -117,4 +129,28 @@ async def add_admin(user: FullUserSchema):
 
     user = user.dict()
 
-    return {**user,"organization_id": org_id, "id": last_id}
+    return {**user, "organization_id": org_id, "id": last_id}
+
+
+@router.get("/{organization_id}/cars")
+async def get_cars_for_organization(organization_id: int):
+    organization = session.query(Organization).get(organization_id)
+    # cars = organization.cars
+    if organization:
+        cars = session.query(Car).join(Organization).options(selectinload(Car.organization)).filter(
+            Organization.id == organization.id).all()
+        return cars
+    return {"error": "Объект не существует"}
+
+
+@router.post("/{organization_id}")
+async def edit_selected_season_for_organization(organization_id: int, season: SeasonIdSchema):
+    organization = session.query(Organization).get(organization_id)
+    season = session.query(Season).get(season.id)
+    if not organization:
+        return {"error": "Организация не найдена"}
+    if not season:
+        return {"error": "Сезон не найден"}
+
+    organization.selectedSeason = season
+    return organization.selectedSeason

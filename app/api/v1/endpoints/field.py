@@ -91,3 +91,10 @@ async def delete_field(field_id:int):
         session.commit()
         return {"message": "Field ({}) deleted".format(query.name)}
     return {"error": "Not Found"}
+
+@router.get("/geojson/{field_id}")
+async def get_geojson_for_field(field_id: int):
+    field = session.query(Field).get(field_id)
+    featureCollection = {"type": "FeatureCollection", "features":[]}
+    featureCollection["features"].append(field.geoJson)
+    return featureCollection

@@ -1,3 +1,4 @@
+from app.models.organization import Organization
 from db import session
 from typing import Union
 from fastapi import APIRouter
@@ -13,11 +14,20 @@ from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 
+
 @router.get("")
 async def get_field_culture_season():
     query = session.query(FieldCultureSeason).all()
     return query
 
+
+@router.get("/{organization_id}/{season_id}")
+async def get_crop_rotation(organization_id: int, season_id: int):
+    fields = session.query(Field).filter(Field.organizationId == organization_id).all()
+    fields = [i.id for i in fields]
+    crop_rotation = session.query(FieldCultureSeason).join(Field).join(Season).filter(
+        FieldCultureSeason.fieldId.in_(fields)).filter(FieldCultureSeason.seasonId == season_id).options(selectinload(FieldCultureSeason.culture)).all()
+    return crop_rotation
 
 @router.post("", response_model=Union[ErrorSchema, CreateFieldCultureSeasonSchema])
 async def create_field_culture_season(fcs: FieldCultureSeasonSchema):
@@ -58,12 +68,15 @@ async def create_field_culture_season(fcs: FieldCultureSeasonSchema):
 
     return FCS
 
+
 @router.get("/{field_id}")
 async def get_crop_rotation_for_field(field_id: int):
     field = session.query(Field).get(field_id)
-    query = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.culture)).options(selectinload(FieldCultureSeason.season)).options(selectinload(FieldCultureSeason.irrigationType)).options(selectinload(FieldCultureSeason.tillage)).filter(FieldCultureSeason.fieldId == field_id).all()
+    query = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.culture)).options(
+        selectinload(FieldCultureSeason.season)).options(selectinload(FieldCultureSeason.irrigationType)).options(
+        selectinload(FieldCultureSeason.tillage)).filter(FieldCultureSeason.fieldId == field_id).all()
     return query
 
-#@router.get("/{field_id}")
-#async def get_field_culture_season(field_id: int):
+# @router.get("/{field_id}")
+# async def get_field_culture_season(field_id: int):
 #    query =

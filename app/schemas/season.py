@@ -15,3 +15,6 @@ class CreateSeasonSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
+class SeasonIdSchema(BaseModel):
+    id: int

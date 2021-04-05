@@ -7,6 +7,8 @@ class FieldCultureSeason(Base):
 
     id = Column(Integer, primary_key=True)
 
+
+
     fieldId = Column(Integer, ForeignKey('fields.id'))
     field = relationship("Field", backref="cultureSeason")
 
