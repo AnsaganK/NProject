@@ -2,7 +2,7 @@ from db import session
 from fastapi import APIRouter
 
 from sqlalchemy.orm import selectinload
-from app.schemas.user import UserSchema
+from app.schemas.user import UserSchema, userForRolesSchema
 from app.schemas.UserRole import UserRoleSchema
 from app.models.user import User
 from app.models.role import Role
@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("")
-async def create_user(userSchema: UserSchema):
+async def create_user(userSchema: userForRolesSchema):
     users = session.query(User).all()
     for i in users:
         if i.email == userSchema.email:

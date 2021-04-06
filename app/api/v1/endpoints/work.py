@@ -1,3 +1,5 @@
+from app.models.cars import Car
+from app.models.user import User
 from db import session
 from fastapi import APIRouter
 from app.models.work import Work
@@ -43,7 +45,22 @@ async def create_works(work: WorkSchema):
     query.status = status
     query.workType = workType
     query.workSubType = workSubType
-
+    for c in work.cars:
+        car = session.query(Car).filter(Car.id == c).first()
+        organization = field.organization
+        if car:
+            if car.organization == organization:
+                query.cars.append(car)
+            else:
+                return {"error":"У этой организации нет такого транспорта"}
+    for u in work.users:
+        user = session.query(User).filter(User.id == u).first()
+        organization = field.organization
+        if user:
+            if user.organization == organization:
+                query.users.append(user)
+            else:
+                return {"error":"У этой организации нет такого сотрудника"}
     session.add(query)
     session.commit()
 

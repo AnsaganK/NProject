@@ -7,7 +7,7 @@ class FullUserSchema1(BaseModel):
     lastName: str = Field(...)
     email: EmailStr = Field(...)
     password: str = Field(...)
-    role: List[RoleForUserSchema] = Field(None)
+    #role: List[RoleForUserSchema] = Field(None)
 
 class FullUserSchema(BaseModel):
     firstName: str = Field(...)
@@ -15,14 +15,14 @@ class FullUserSchema(BaseModel):
     email: EmailStr = Field(...)
     password: str = Field(...)
     organizationId: int = Field(None)
-    role: List[int] = Field(None)
+    #role: List[int] = Field(None)
 
 class UserSchema(BaseModel):
     firstName: str = Field(...)
     lastName: str = Field(...)
     email: EmailStr = Field(...)
     password: str = Field(...)
-    role: Optional[List[int]] = Field(None)
+    #role: Optional[List[int]] = Field(None)
 
 
 class UserLoginSchema(BaseModel):
@@ -30,3 +30,5 @@ class UserLoginSchema(BaseModel):
     email: EmailStr = Field(...)
     password: str = Field(...)
 
+class userForRolesSchema(UserSchema):
+    role: Optional[List[int]] = Field(None)

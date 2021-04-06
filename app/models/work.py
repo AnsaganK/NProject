@@ -1,6 +1,20 @@
 from config import Base
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, BigInteger, Table
 from sqlalchemy.orm import relationship
+
+WorkUsers = Table(
+    'WorkUsers',
+    Base.metadata,
+    Column('workId', Integer, ForeignKey('work.id')),
+    Column('userId', Integer, ForeignKey('users.id'))
+)
+
+WorkCars = Table(
+    'WorkCars',
+    Base.metadata,
+    Column('workId', Integer, ForeignKey('work.id')),
+    Column('carId', Integer, ForeignKey('cars.id'))
+)
 
 class Work(Base):
     __tablename__ = "work"
@@ -21,5 +35,8 @@ class Work(Base):
 
     workSubTypeId = Column(Integer, ForeignKey("workSubType.id"))
     workSubType = relationship("WorkSubType", backref="works", foreign_keys=[workSubTypeId])
+
+    users = relationship("User", secondary=WorkUsers, backref="works", lazy="subquery")
+    cars = relationship("Car", secondary=WorkCars, backref="works", lazy="subquery")
 
     geoJson = Column(JSON)

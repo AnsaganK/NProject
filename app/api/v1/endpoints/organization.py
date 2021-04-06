@@ -1,3 +1,5 @@
+from enum import Enum
+
 from fastapi import APIRouter, Depends,Body
 from sqlalchemy.orm import selectinload
 from sqlalchemy import desc
@@ -27,6 +29,7 @@ async def get_organizations():
     return query
 
 
+
 @router.get("/{organization_id}")
 async def get_organization(organization_id: int):#, token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
@@ -38,6 +41,26 @@ async def get_organization(organization_id: int):#, token: str = Depends(JWTBear
         a["usersCount"] = session.query(User).join(Organization).filter(Organization.id == a["id"]).count()
         return query
     return {"error": "Not Found"}
+
+class RoleList(str, Enum):
+    admin = "admin"
+    employer = "employer"
+    all = "all"
+
+@router.get("/users/{organization_id}")
+async def get_users_for_organization(organization_id: int, group: RoleList):
+    # organization = session.query(Organization).filter(Organization.id == organization_id).first()
+    if group == "admin":
+        role = session.query(Role).filter(Role.name == "Администратор организации").first()
+        users = session.query(User).filter(User.organizationId == organization_id).filter(User.roles.any(Role.id.in_([role.id]))).all()
+        return users
+    if group == "employer":
+        role = session.query(Role).filter(Role.name == "Сотрудник").first()
+        users = session.query(User).filter(User.organizationId == organization_id).filter(User.roles.any(Role.id.in_([role.id]))).all()
+        return users
+    if group == "all":
+        return session.query(User).filter(User.organizationId == organization_id).all()
+    return session.query(User).filter(User.organizationId == organization_id).all()
 
 @router.get("/selectedSeason/{organization_id}")
 async def get_selected_season(organization_id: int):
@@ -84,20 +107,29 @@ async def create_organization_user(ou: OrganizationUserSchema):
         for i in session.query(User).all():
             if i.email == u.email:
                 return {"error": "A user with this email has already been created"}
-        if u.role:
-            # print(u.role)
-            for i in u.role:
-                userId = int(i)
-                role = session.query(Role).filter(Role.id == userId).first()
-                # print(ou)
-                # ou = ou.dict()
-                # ou["userObject"]["role"] = []
-                if role:
-                    # ou["userObject"]["role"].append({"id": userId})
-                    userQuery.roles.append(role)
+        # if u.role:
+        #     # print(u.role)
+        #     for i in u.role:
+        #         userId = int(i)
+        #         role = session.query(Role).filter(Role.id == userId).first()
+        #         # print(ou)
+        #         # ou = ou.dict()
+        #         # ou["userObject"]["role"] = []
+        #         if role:
+        #             # ou["userObject"]["role"].append({"id": userId})
+        #             userQuery.roles.append(role)
 
         organizationQuery.selectedSeason = season
+
+        roleName = "Администратор организации"
+        role = session.query(Role).filter(Role.name == roleName).first()
         userQuery.organization = organizationQuery
+        if not role:
+            role = Role(name=roleName)
+            session.add(role)
+            session.commit()
+        userQuery.roles.append(role)
+
         session.add(userQuery)
         session.commit()
 
@@ -118,7 +150,15 @@ async def add_admin(user: FullUserSchema):
             return {"error": "Пользователь с такой почтой уже существует"}
     if not OrganizationQuery:
         return {"error": "Организация не найдена"}
+
+    roleName = "Администратор организации"
+    role = session.query(Role).filter(Role.name == roleName).first()
     UserQuery.organization = OrganizationQuery
+    if not role:
+        role = Role(name=roleName)
+        session.add(role)
+        session.commit()
+    UserQuery.roles.append(role)
 
     session.add(UserQuery)
     session.commit()
@@ -131,6 +171,36 @@ async def add_admin(user: FullUserSchema):
 
     return {**user, "organization_id": org_id, "id": last_id}
 
+@router.post("/add_employer")
+async def add_admin(user: FullUserSchema):
+    UserQuery = User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password)
+    OrganizationQuery = session.query(Organization).filter(Organization.id == user.organizationId).first()
+    users = session.query(User).join(Organization).filter(Organization.id == user.organizationId).all()
+    for i in users:
+        if i.email == user.email:
+            return {"error": "Пользователь с такой почтой уже существует"}
+    if not OrganizationQuery:
+        return {"error": "Организация не найдена"}
+
+    roleName = "Сотрудник"
+    role = session.query(Role).filter(Role.name == roleName).first()
+    UserQuery.organization = OrganizationQuery
+    if not role:
+        role = Role(name=roleName)
+        session.add(role)
+        session.commit()
+    UserQuery.roles.append(role)
+
+    session.add(UserQuery)
+    session.commit()
+
+    last_id = UserQuery.id
+
+    org_id = user.organizationId
+
+    user = user.dict()
+
+    return {**user, "organization_id": org_id, "id": last_id}
 
 @router.get("/{organization_id}/cars")
 async def get_cars_for_organization(organization_id: int):

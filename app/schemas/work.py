@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from pydantic.types import Json, Optional
+from pydantic.types import Json, Optional, List
 
 
 class BaseWorkSchema(BaseModel):
@@ -11,6 +11,8 @@ class BaseWorkSchema(BaseModel):
     statusId: int
     workTypeId: int
     workSubTypeId: int
+    users: List[int]
+    cars: List[int]
     geoJson: dict
 
 
