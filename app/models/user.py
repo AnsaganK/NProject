@@ -14,7 +14,7 @@ class User(Base):
     password = Column(String)
     organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="user")
-    roles = relationship("Role", secondary=UsersRoles, backref="users", lazy="subquery")
+    roles = relationship("Role", secondary=UsersRoles, backref="users")#, lazy="subquery")
 
     def __repr__(self):
         return "<User ({0})>".format(self.email)

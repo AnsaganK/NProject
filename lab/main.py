@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from lab.core.config import settings
 from lab.api.v1.api import api_router
@@ -29,3 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 Base.metadata.create_all(engine)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

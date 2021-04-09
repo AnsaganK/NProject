@@ -1,26 +1,61 @@
-from app.models.cars import Car
-from app.models.user import User
-from db import session
-from fastapi import APIRouter
-from app.models.work import Work
-from app.models.field import Field
-from lab.models.mini_status import MiniStatus
-from app.models.workType import WorkType
-from app.models.workSubType import WorkSubType
-from app.schemas.work import WorkSchema, createWorkSchema
 from typing import Union
+
+from fastapi import APIRouter
+from sqlalchemy.orm import selectinload
+
+from app.models.cars import Car
+from app.models.field import Field
+from app.models.organization import Organization
+from app.models.user import User
+from app.models.work import Work
+from app.models.workSubType import WorkSubType
+from app.models.workType import WorkType
 from app.schemas import ErrorSchema
+from app.schemas.work import WorkSchema, createWorkSchema
+from db import session
+from lab.models.mini_status import MiniStatus
 
 router = APIRouter()
+
 
 @router.get("")
 async def get_works():
     query = session.query(Work).all()
     return query
 
+
+@router.get("/field/{field_id}")
+async def get_field_for_organization(field_id: int):
+    field = session.query(Field).filter(Field.id == field_id).first()
+
+    if not field:
+        return {"error": "Поле не найдена"}
+
+    works = field.works
+    return works
+
+
+@router.get("/organization/{organization_id}")
+async def get_works_for_organization(organization_id: int):
+    organization = session.query(Organization).filter(Organization.id == organization_id).first()
+
+    if not organization:
+        return {"error": "Организаци не найдена"}
+
+    fields = organization.fields
+    lst = [i.id for i in fields]
+    print(lst)
+    f = session.query(Field).filter(Field.id.in_(lst)).all()
+    print('f', f)
+    works = session.query(Work).filter(Work.field.has(Field.id.in_(lst))).all()
+    # works = organization.works
+    return works
+
+
 @router.post("", response_model=Union[ErrorSchema, createWorkSchema])
 async def create_works(work: WorkSchema):
-    query = Work(name=work.name, description=work.description, geoJson=work.geoJson, startDate=work.startDate, endDate=work.endDate)
+    query = Work(name=work.name, description=work.description, geoJson=work.geoJson, startDate=work.startDate,
+                 endDate=work.endDate)
 
     field = session.query(Field).get(work.fieldId)
     if not field:
@@ -52,7 +87,7 @@ async def create_works(work: WorkSchema):
             if car.organization == organization:
                 query.cars.append(car)
             else:
-                return {"error":"У этой организации нет такого транспорта"}
+                return {"error": "У этой организации нет такого транспорта"}
     for u in work.users:
         user = session.query(User).filter(User.id == u).first()
         organization = field.organization
@@ -60,18 +95,23 @@ async def create_works(work: WorkSchema):
             if user.organization == organization:
                 query.users.append(user)
             else:
-                return {"error":"У этой организации нет такого сотрудника"}
+                return {"error": "У этой организации нет такого сотрудника"}
+    # print(query)
     session.add(query)
     session.commit()
 
     return query
 
+
 @router.get("/{work_id}")
 async def get_detail_work(work_id: int):
-    query = session.query(Work).get(work_id)
+    query = session.query(Work).options(selectinload(Work.users)).options(selectinload(Work.cars)).options(
+        selectinload(Work.field)).options(selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
+        selectinload(Work.status)).get(work_id)
     if query:
         return query
     return {"error": "Работа не найдена"}
+
 
 @router.delete("/work_id")
 async def delete_work(work_id: int):

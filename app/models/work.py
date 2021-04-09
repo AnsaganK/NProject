@@ -36,7 +36,7 @@ class Work(Base):
     workSubTypeId = Column(Integer, ForeignKey("workSubType.id"))
     workSubType = relationship("WorkSubType", backref="works", foreign_keys=[workSubTypeId])
 
-    users = relationship("User", secondary=WorkUsers, backref="works", lazy="subquery")
-    cars = relationship("Car", secondary=WorkCars, backref="works", lazy="subquery")
+    users = relationship("User", secondary=WorkUsers, backref="works")
+    cars = relationship("Car", secondary=WorkCars, backref="works")
 
     geoJson = Column(JSON)

@@ -115,6 +115,7 @@ class Order(Base):
     grid = Column(JSON)
     way = Column(JSON)
     cellCount = Column(Integer)
+    selectedPoints = Column(JSON)
     
     groupId = Column(Integer, ForeignKey("OrderGroup.id"))
     group = relationship('OrderGroup', backref="orders")

@@ -38,7 +38,7 @@ async def get_field(field_id: int):
 
 
 
-@router.post("/")
+@router.post("")
 async def create_field(field: FieldSchema):
     query = Field(name=field.name, kadNumber=field.kadNumber,
                   urlShpFile=field.urlShpFile,
@@ -73,11 +73,11 @@ async def create_field(field: FieldSchema):
 async def update_field(field_id:int, field: FieldSchema):
     query = session.query(Field).filter(Field.id == field_id).first()
     for i in session.query(Field).all():
-        if i.kadastrNumber == Field.kadNumber and i.id != query.id:
+        if i.kadNumber == Field.kadNumber and i.id != query.id:
             return {"error": "A field with this name has already been created"}
     if query:
         query.name = field.name
-        query.kadastrNumber = field.kadNumber
+        query.kadNumber = field.kadNumber
         query.urlShpFile = field.urlShpFile
         query.districtId = field.districtId
         return {"message": "Field ({}) updated".format(query.name)}
