@@ -114,7 +114,8 @@ async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JW
         session.add(query)
         session.add(history)
         session.commit()
-        print(query)
+        print(query.type)
+        print(query.organization)
         return {**query.__dict__}
     return {"error": "Not Found"}
 
