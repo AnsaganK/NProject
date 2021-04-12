@@ -7,7 +7,7 @@ from lab.schemas.mini_status import MiniStatusSchema
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_mini_status():
     query = session.query(MiniStatus).all()
     return query

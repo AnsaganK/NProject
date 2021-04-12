@@ -5,7 +5,7 @@ from app.schemas.typesForField import TypesForFieldSchema
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("")
 async def get_types_for_field():
     query = session.query(TypesForField).all()
     return query
@@ -17,7 +17,7 @@ async def get_type_for_field(type_id: int):
         return query
     return {"error": "Not Found type"}
 
-@router.post("/")
+@router.post("")
 async def create_type_for_field(type: TypesForFieldSchema):
     query = TypesForField(name=type.name, key=type.key)
     for i in session.query(TypesForField).all():

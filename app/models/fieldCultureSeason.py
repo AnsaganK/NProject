@@ -2,12 +2,11 @@ from config import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
+
 class FieldCultureSeason(Base):
     __tablename__ = "FieldCultureSeason"
 
     id = Column(Integer, primary_key=True)
-
-
 
     fieldId = Column(Integer, ForeignKey('fields.id'))
     field = relationship("Field", backref="cultureSeason")

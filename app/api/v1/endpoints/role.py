@@ -13,7 +13,7 @@ database = databases.Database(DATABASE_URL)
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_roles():
     query = session.query(Role).all()
     for i in query:

@@ -8,7 +8,7 @@ from app.models.role import Role
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_status():
     query = session.query(Status).all()
     return query

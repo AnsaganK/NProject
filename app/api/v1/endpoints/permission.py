@@ -6,7 +6,7 @@ from app.schemas.permission import PermissionSchema
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_permissions():
     query = session.query(Permission).all()
     return query

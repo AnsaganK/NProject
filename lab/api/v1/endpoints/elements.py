@@ -1,3 +1,5 @@
+from sqlalchemy.orm import selectinload
+
 from db import session
 from fastapi import APIRouter, Query
 from lab.models.elements import Elements, Type, ElementType, Range, Color, RangeColor, ElementColor
@@ -7,33 +9,51 @@ import time
 router = APIRouter()
 
 
-@router.get("/")
+def wrap_type_element(query):
+    if query:
+        dic = {"id": query.id, "name": query.name, "code": query.code, "date": query.date, "types": []}
+        types = query.types
+        for type in types:
+            t = {"name": type.type.name, "range": []}
+            element_type = session.query(ElementType).filter(ElementType.element == query).filter(
+                ElementType.type == type).first()
+            element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
+            for j in element_colors:
+                range_color = j.rangeColor
+                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to,
+                     "color": range_color.color.id, "code": range_color.color.code}
+                t["range"].append(r)
+            dic["types"].append(t)
+        return dic
+
+    return None
+
+
+@router.get("")
 async def get_elements(*, main: bool = Query(False)):
     query = session.query(Elements).all()
+    data = []
+    for i in query:
+        a = wrap_type_element(i)
+        if a:
+            data.append(a)
     if main:
         query = session.query(Elements).filter(Elements.standard == True).all()
         for i in query:
-            a = i.types
-    return query
+            a = wrap_type_element(i)
+            if a:
+                data.append(a)
+    return data
 
 
 @router.get("/{element_id}")
 async def get_element(element_id: int):
     query = session.query(Elements).filter(Elements.id == element_id).first()
-    if query:
-        dic = {"name": query.name, "code": query.code, "date": query.date, "types": []}
-        types = query.types
-        for type in types:
-            t = {"name": type.type.name, "range": []}
-            element_type = session.query(ElementType).filter(ElementType.element == query).filter(ElementType.type == type).first()
-            element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
-            for j in element_colors:
-                range_color = j.rangeColor
-                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to, "color": range_color.color.id, "code": range_color.color.code}
-                t["range"].append(r)
-            dic["types"].append(t)
-        return dic
-    return {"error": "Not Found"}
+    a = wrap_type_element(query)
+    if a:
+        return a
+    else:
+        return {"error": "Элемент не найден"}
 
 
 @router.post("/")
@@ -120,7 +140,7 @@ async def update_element(element_id: int, element: ElementsSchema):
 
 
 @router.delete("/{element_id}")
-async def delete_element(element_id:int):
+async def delete_element(element_id: int):
     query = session.query(Elements).filter(Elements.id == element_id).first()
     if query:
         session.delete(query)

@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_all_element_types():
     query = session.query(Type).options(selectinload(Type.element)).all()
     return query

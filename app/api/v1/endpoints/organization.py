@@ -20,7 +20,7 @@ from db import session
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_organizations():
     query = session.query(Organization).all()
     for i in query:

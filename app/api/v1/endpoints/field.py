@@ -1,3 +1,9 @@
+from fastapi.params import Depends
+
+from app.auth.auth_bearer import JWTBearer
+from app.models.historyFields import HistoryFields
+from app.models.user import User
+from app.views.auth.auth_bearer import decodeJWT
 from db import session
 from fastapi import APIRouter
 from app.models.field import Field
@@ -5,6 +11,7 @@ from app.models.typesForField import TypesForField
 from app.schemas.field import FieldSchema
 from .organization import Organization
 from app.schemas.organization import OrganizationSchema
+import time
 
 from sqlalchemy.orm import selectinload
 
@@ -12,12 +19,20 @@ from sqlalchemy.orm import selectinload
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_fields():
     #query = session.query(Field, Organization.id).join(Field.organization).all()
     #query = session.query(Field.name, Field.organization.label('organization')).all()
     query = session.query(Field).options(selectinload(Field.organization)).options(selectinload(Field.type)).all()
     return query
+
+#@router.get()
+
+@router.get("/history/{field_id}")
+async def get_history_for_field(field_id: int):
+    query = session.query(HistoryFields).options(selectinload(HistoryFields.user)).filter(HistoryFields.fieldId == field_id).all()
+    return query
+
 
 @router.get("/organization/{organization_id}")
 async def get_field(organization_id: int):
@@ -39,7 +54,10 @@ async def get_field(field_id: int):
 
 
 @router.post("")
-async def create_field(field: FieldSchema):
+async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
+    user = decodeJWT(token)
+    user = session.query(User).filter(User.id == user["id"]).first()
+    print("userId: ", user)
     query = Field(name=field.name, kadNumber=field.kadNumber,
                   urlShpFile=field.urlShpFile,
                   districtId=field.districtId,
@@ -59,8 +77,11 @@ async def create_field(field: FieldSchema):
 
     query.organization = organization
     query.type = type
-
+    history = HistoryFields(field=query, user=user, date=int(time.time()), action="Создано")
+    print(query)
+    print(history)
     session.add(query)
+    session.add(history)
     session.commit()
 
     last_id = query.id
@@ -70,17 +91,31 @@ async def create_field(field: FieldSchema):
 
 
 @router.put("/{field_id}")
-async def update_field(field_id:int, field: FieldSchema):
+async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JWTBearer())):
+    user = decodeJWT(token)
+    user = session.query(User).filter(User.id == user["id"]).first()
     query = session.query(Field).filter(Field.id == field_id).first()
     for i in session.query(Field).all():
         if i.kadNumber == Field.kadNumber and i.id != query.id:
             return {"error": "A field with this name has already been created"}
+    organization = query.organization
+    type = session.query(TypesForField).filter(TypesForField.id == field.typeId).first()
     if query:
         query.name = field.name
         query.kadNumber = field.kadNumber
         query.urlShpFile = field.urlShpFile
         query.districtId = field.districtId
-        return {"message": "Field ({}) updated".format(query.name)}
+        query.organization = organization
+        query.geoJson = field.geoJson
+        query.length = field.length
+        query.area = field.area
+        query.type = type
+        history = HistoryFields(field=query, user=user, date=int(time.time()), action="Изменено")
+        session.add(query)
+        session.add(history)
+        session.commit()
+        print(query)
+        return {**query.__dict__}
     return {"error": "Not Found"}
 
 @router.delete("/{field_id}")
