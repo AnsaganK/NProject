@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get("")
 async def get_works():
-    query = session.query(Work).all()
+    query = session.query(Work).options(selectinload(Work.field)).all()
     return query
 
 
@@ -44,10 +44,10 @@ async def get_works_for_organization(organization_id: int):
 
     fields = organization.fields
     lst = [i.id for i in fields]
-    print(lst)
-    f = session.query(Field).filter(Field.id.in_(lst)).all()
-    print('f', f)
-    works = session.query(Work).filter(Work.field.has(Field.id.in_(lst))).all()
+    #print(lst)
+    #f = session.query(Field).filter(Field.id.in_(lst)).all()
+    #print('f', f)
+    works = session.query(Work).options(selectinload(Work.field)).filter(Work.field.has(Field.id.in_(lst))).all()
     # works = organization.works
     return works
 
@@ -107,7 +107,7 @@ async def create_works(work: WorkSchema):
 async def get_detail_work(work_id: int):
     query = session.query(Work).options(selectinload(Work.users)).options(selectinload(Work.cars)).options(
         selectinload(Work.field)).options(selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
-        selectinload(Work.status)).get(work_id)
+        selectinload(Work.status)).filter(Work.id == work_id).first()
     if query:
         return query
     return {"error": "Работа не найдена"}

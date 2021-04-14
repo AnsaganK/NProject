@@ -22,14 +22,20 @@ async def get_order_group():
     for i in query:
         a = i.__dict__
         zero = 0
-        for j in session.query(Order).join(OrderGroup).filter(
-                OrderGroup.id == a["id"]):
+        for j in session.query(Order).filter(
+                Order.groupId == a["id"]):
             c = len(j.cells)
             zero += c
 
         a["cellsCount"] = zero
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return {"orders": query}
+
+
+@router.get("/download_orders/{order_group_id}")
+async def downloads_order_groups(order_group_id: int):
+    query = session.query(OrderGroup).filter(OrderGroup.id == order_group_id).options(selectinload(OrderGroup.orders)).first()
+    return query
 
 
 def parse_data(geoJson):
@@ -53,6 +59,7 @@ def create_feature_collection(orders):
     dic["features"] = features
     return dic
 
+
 @router.get("/groupGeoJson/{order_group_id}")
 async def get_geojson_for_field(order_group_id: int):
     order = session.query(OrderGroup).filter(OrderGroup.id == order_group_id).first()
@@ -73,5 +80,6 @@ async def get_geojson_for_field(order_id: int):
 
 @router.get("/orders/{organization_id}")
 async def get_orders_for_organization(organization_id: int):
-    query = session.query(OrderGroup).filter(OrderGroup.organizationId == organization_id).all()
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.orders)).filter(
+        OrderGroup.organizationId == organization_id).all()
     return {"orders": query}

@@ -32,3 +32,7 @@ class UserLoginSchema(BaseModel):
 
 class userForRolesSchema(UserSchema):
     role: Optional[List[int]] = Field(None)
+
+
+class allFullUserSchema(FullUserSchema):
+    role: Optional[List[int]] = Field(None)

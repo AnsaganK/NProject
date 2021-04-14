@@ -1,8 +1,9 @@
+from app.models.organization import Organization
 from db import session
 from fastapi import APIRouter
 
 from sqlalchemy.orm import selectinload
-from app.schemas.user import UserSchema, userForRolesSchema
+from app.schemas.user import UserSchema, userForRolesSchema, allFullUserSchema
 from app.schemas.UserRole import UserRoleSchema
 from app.models.user import User
 from app.models.role import Role
@@ -43,8 +44,11 @@ async def user_detail(user_id: int):
 
 
 @router.put("/{user_id}")
-async def user_update(user_id: int, user: UserSchema):
+async def user_update(user_id: int, user: allFullUserSchema):
     query = session.query(User).filter(User.id == user_id).first()
+    organization = session.query(Organization).filter(Organization.id == allFullUserSchema.organizationId).first()
+    if not organization:
+        return {"error": "Организация не найдена"}
     if user:
         for i in session.query(User).all():
             if i.email == user.email and i.id != user_id:
@@ -54,6 +58,14 @@ async def user_update(user_id: int, user: UserSchema):
         query.lastName = user.lastName
         query.email = user.email
         query.password = user.password
+        query.organization = organization
+
+        query.roles = []
+
+        for i in allFullUserSchema.role:
+            role = session.query(Role).filter(Role.id == i).first()
+            query.roles.append(role)
+
         session.add(query)
         session.commit()
         return {"user_id": query.id, "user_name": query.name}

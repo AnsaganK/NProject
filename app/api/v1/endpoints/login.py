@@ -5,7 +5,7 @@ from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_handler import signJWT
 from app.models.user import User
 from app.models.role import Role
-from app.schemas.user import UserSchema, UserLoginSchema
+from app.schemas.user import UserSchema, UserLoginSchema, userForRolesSchema
 from db import session
 from app.views.user import check_user
 from app.auth.auth_handler import decodeJWT
@@ -23,7 +23,7 @@ async def auth_me(token: str = Depends(JWTBearer())):
 
 
 @router.post("/user/signup")
-async def create_user(user: UserSchema = Body(...)):
+async def create_user(user: userForRolesSchema = Body(...)):
     query = User(firstName=user.firstName,
                  lastName=user.lastName,
                  email=user.email,
@@ -35,7 +35,7 @@ async def create_user(user: UserSchema = Body(...)):
             return {"error": "A user with this email has already been created"}
 
     for i in user.role:
-        r = session.query(Role).filter(Role.id == int(i.id)).first()
+        r = session.query(Role).filter(Role.id == i).first()
         if r:
             query.roles.append(r)
 
