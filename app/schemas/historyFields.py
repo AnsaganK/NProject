@@ -12,6 +12,7 @@ class HistoryFieldsSchema(BaseModel):
     fieldId: int
     action: ActionName
     userId: int
+    geoJson: dict
     date: int
 
 

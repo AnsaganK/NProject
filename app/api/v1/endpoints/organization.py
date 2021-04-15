@@ -52,14 +52,14 @@ async def get_users_for_organization(organization_id: int, group: RoleList):
     # organization = session.query(Organization).filter(Organization.id == organization_id).first()
     if group == "admin":
         role = session.query(Role).filter(Role.name == "Администратор организации").first()
-        users = session.query(User).filter(User.organizationId == organization_id).filter(User.roles.any(Role.id.in_([role.id]))).all()
+        users = session.query(User).filter(User.organizationId == organization_id).options(selectinload(User.roles)).filter(User.roles.any(Role.id.in_([role.id]))).all()
         return users
     if group == "employer":
         role = session.query(Role).filter(Role.name == "Сотрудник").first()
-        users = session.query(User).filter(User.organizationId == organization_id).filter(User.roles.any(Role.id.in_([role.id]))).all()
+        users = session.query(User).filter(User.organizationId == organization_id).options(selectinload(User.roles)).filter(User.roles.any(Role.id.in_([role.id]))).all()
         return users
     if group == "all":
-        return session.query(User).filter(User.organizationId == organization_id).all()
+        return session.query(User).filter(User.organizationId == organization_id).options(selectinload(User.roles)).all()
     return session.query(User).filter(User.organizationId == organization_id).all()
 
 @router.get("/selectedSeason/{organization_id}")

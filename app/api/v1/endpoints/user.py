@@ -46,7 +46,7 @@ async def user_detail(user_id: int):
 @router.put("/{user_id}")
 async def user_update(user_id: int, user: allFullUserSchema):
     query = session.query(User).filter(User.id == user_id).first()
-    organization = session.query(Organization).filter(Organization.id == allFullUserSchema.organizationId).first()
+    organization = session.query(Organization).filter(Organization.id == user.organizationId).first()
     if not organization:
         return {"error": "Организация не найдена"}
     if user:
@@ -62,13 +62,13 @@ async def user_update(user_id: int, user: allFullUserSchema):
 
         query.roles = []
 
-        for i in allFullUserSchema.role:
+        for i in user.roles:
             role = session.query(Role).filter(Role.id == i).first()
             query.roles.append(role)
 
         session.add(query)
         session.commit()
-        return {"user_id": query.id, "user_name": query.name}
+        return {**(user.__dict__)}
 
     return {"error": "There is no user with this ID"}
 

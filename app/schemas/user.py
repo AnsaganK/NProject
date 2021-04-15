@@ -35,4 +35,4 @@ class userForRolesSchema(UserSchema):
 
 
 class allFullUserSchema(FullUserSchema):
-    role: Optional[List[int]] = Field(None)
+    roles: Optional[List[int]] = Field(None)

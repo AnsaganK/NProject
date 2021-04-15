@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 
 from config import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, JSON
 
 
 class HistoryFields(Base):
@@ -16,6 +16,8 @@ class HistoryFields(Base):
     user = relationship("User", backref="history")
 
     action = Column(String)
+
+    geoJson = Column(JSON)
 
     date = Column(Integer)
 

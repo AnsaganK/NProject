@@ -37,7 +37,7 @@ async def get_history_for_field(field_id: int):
 @router.get("/organization/{organization_id}")
 async def get_field(organization_id: int):
     #query = session.query(Organization).options(selectinload(Organization.fields)).filter(Organization.id == organization_id).all()
-    query = session.query(Field).join(Organization).filter(Organization.id == organization_id).all()
+    query = session.query(Field).join(Organization).options(selectinload(Field.type)).filter(Organization.id == organization_id).all()
     if query:
         return query
     return {"error": "Not Found"}
@@ -77,9 +77,7 @@ async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
 
     query.organization = organization
     query.type = type
-    history = HistoryFields(field=query, user=user, date=int(time.time()), action="Создано")
-    print(query)
-    print(history)
+    history = HistoryFields(field=query, user=user, date=int(time.time()), action="Создано", geoJson=field.geoJson)
     session.add(query)
     session.add(history)
     session.commit()
@@ -110,7 +108,7 @@ async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JW
         query.length = field.length
         query.area = field.area
         query.type = type
-        history = HistoryFields(field=query, user=user, date=int(time.time()), action="Изменено")
+        history = HistoryFields(field=query, user=user, date=int(time.time()), action="Изменено", geoJson=field.geoJson)
         session.add(query)
         session.add(history)
         session.commit()
