@@ -1,5 +1,7 @@
+from pydantic.types import List
+
 from db import session
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus
@@ -39,33 +41,46 @@ async def get_cells_for_order(order_id: int):
             dic.append(cellDic)
     return dic
 
-@router.get("/resultColor/{order_id}")
-async def resultColor(order_id: int):
+def getForOrderResultColor(order_id):
     all_els = []
     order = session.query(Order).filter(Order.id == order_id).first()
-    for el in order.elements:
-        onlyElement = {"element": el.name,"elementId": el.id, "result":[]}
-        cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(
-            OrderCells.orderId == order_id).filter(OrderCellsResult.elementId == el.id).all()
-        for cell in cells:
-            cellCode = cell.orderCell.cell.code
-            for c in cells:
-                if c.orderCell.cell.code == cellCode:
-                    pass
-        dic = []
-        types = session.query(ElementType).join(Elements).filter(Elements.id == el.id).all()
-        for i in types:
-            elDic = {"name": i.type.name, "id": i.type.id, "cells": []}
+    if order:
+        for el in order.elements:
+            onlyElement = {"element": el.name, "elementId": el.id, "result": []}
+            cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(
+                OrderCells.orderId == order_id).filter(OrderCellsResult.elementId == el.id).all()
             for cell in cells:
                 cellCode = cell.orderCell.cell.code
-                cellResult = cell.result
-                cellColor = changeColor(i.color, cellResult)
-                colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
-                elDic["cells"].append(colorDic)
-            dic.append(elDic)
-            onlyElement["result"].append(dic)
-        all_els.append(onlyElement)
-    return all_els
+                for c in cells:
+                    if c.orderCell.cell.code == cellCode:
+                        pass
+            dic = []
+            types = session.query(ElementType).join(Elements).filter(Elements.id == el.id).all()
+            for i in types:
+                elDic = {"name": i.type.name, "id": i.type.id, "cells": []}
+                for cell in cells:
+                    cellCode = cell.orderCell.cell.code
+                    cellResult = cell.result
+                    cellColor = changeColor(i.color, cellResult)
+                    colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
+                    elDic["cells"].append(colorDic)
+                dic.append(elDic)
+                onlyElement["result"].append(dic)
+            all_els.append(onlyElement)
+    return {"orderId": order_id, "results": all_els}
+
+@router.post("/resultColor")
+async def result_color_selected_orders(orderList:List[int] = Body(...)):
+    dataList = []
+    for orderId in orderList:
+        data = getForOrderResultColor(orderId)
+        dataList.append(data)
+    return dataList
+
+@router.get("/resultColor/{order_id}")
+async def resultColor(order_id: int):
+    return getForOrderResultColor(order_id)
+
 
 def changeColor(elementColor, value):
     for i in elementColor:

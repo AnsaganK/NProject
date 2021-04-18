@@ -29,6 +29,19 @@ async def get_crop_rotation(organization_id: int, season_id: int):
         FieldCultureSeason.fieldId.in_(fields)).filter(FieldCultureSeason.seasonId == season_id).options(selectinload(FieldCultureSeason.culture)).all()
     return crop_rotation
 
+@router.get("/{field_id}/{season_id}")
+async def get_crop_rotation(season_id: int, field_id: int):
+    crop_rotation = session.query(FieldCultureSeason).join(Field).join(Season).filter(
+        FieldCultureSeason.fieldId == field_id).\
+        filter(FieldCultureSeason.seasonId == season_id).\
+        options(selectinload(FieldCultureSeason.culture)).\
+        options(selectinload(FieldCultureSeason.field)).\
+        options(selectinload(FieldCultureSeason.season)).\
+        options(selectinload(FieldCultureSeason.irrigationType)).\
+        options(selectinload(FieldCultureSeason.tillage)).all()
+    return crop_rotation
+
+
 @router.post("", response_model=Union[ErrorSchema, CreateFieldCultureSeasonSchema])
 async def create_field_culture_season(fcs: FieldCultureSeasonSchema):
     if session.query(FieldCultureSeason).filter(FieldCultureSeason.fieldId == fcs.fieldId,
