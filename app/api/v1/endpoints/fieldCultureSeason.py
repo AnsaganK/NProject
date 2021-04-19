@@ -20,8 +20,15 @@ async def get_field_culture_season():
     query = session.query(FieldCultureSeason).all()
     return query
 
+@router.get("/{field_id}")
+async def get_crop_rotation_for_field(field_id: int):
+    query = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.culture)).options(
+        selectinload(FieldCultureSeason.season)).options(selectinload(FieldCultureSeason.irrigationType)).options(
+        selectinload(FieldCultureSeason.tillage)).filter(FieldCultureSeason.fieldId == field_id).all()
+    return query
 
-@router.get("/{organization_id}/{season_id}")
+
+@router.get("/organization/{organization_id}/{season_id}")
 async def get_crop_rotation(organization_id: int, season_id: int):
     fields = session.query(Field).filter(Field.organizationId == organization_id).all()
     fields = [i.id for i in fields]
@@ -29,9 +36,9 @@ async def get_crop_rotation(organization_id: int, season_id: int):
         FieldCultureSeason.fieldId.in_(fields)).filter(FieldCultureSeason.seasonId == season_id).options(selectinload(FieldCultureSeason.culture)).all()
     return crop_rotation
 
-@router.get("/{field_id}/{season_id}")
+@router.get("/field/field/{field_id}/{season_id}")
 async def get_crop_rotation(season_id: int, field_id: int):
-    crop_rotation = session.query(FieldCultureSeason).join(Field).join(Season).filter(
+    crop_rotation = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.irrigationType)).options(selectinload(FieldCultureSeason.tillage)).join(Field).join(Season).filter(
         FieldCultureSeason.fieldId == field_id).\
         filter(FieldCultureSeason.seasonId == season_id).\
         options(selectinload(FieldCultureSeason.culture)).\
@@ -82,13 +89,7 @@ async def create_field_culture_season(fcs: FieldCultureSeasonSchema):
     return FCS
 
 
-@router.get("/{field_id}")
-async def get_crop_rotation_for_field(field_id: int):
-    field = session.query(Field).get(field_id)
-    query = session.query(FieldCultureSeason).options(selectinload(FieldCultureSeason.culture)).options(
-        selectinload(FieldCultureSeason.season)).options(selectinload(FieldCultureSeason.irrigationType)).options(
-        selectinload(FieldCultureSeason.tillage)).filter(FieldCultureSeason.fieldId == field_id).all()
-    return query
+
 
 # @router.get("/{field_id}")
 # async def get_field_culture_season(field_id: int):

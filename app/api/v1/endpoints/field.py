@@ -94,7 +94,7 @@ async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JW
     user = session.query(User).filter(User.id == user["id"]).first()
     query = session.query(Field).filter(Field.id == field_id).first()
     for i in session.query(Field).all():
-        if i.kadNumber == Field.kadNumber and i.id != query.id:
+        if i.kadNumber == field.kadNumber and i.id != query.id:
             return {"error": "A field with this name has already been created"}
     organization = query.organization
     type = session.query(TypesForField).filter(TypesForField.id == field.typeId).first()

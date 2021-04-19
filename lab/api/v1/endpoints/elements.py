@@ -14,13 +14,13 @@ def wrap_type_element(query):
         dic = {"id": query.id, "name": query.name, "code": query.code, "date": query.date, "types": []}
         types = query.types
         for type in types:
-            t = {"name": type.type.name, "range": []}
+            t = {"id": type.type.id, "name": type.type.name, "range": []}
             element_type = session.query(ElementType).filter(ElementType.element == query).filter(
                 ElementType.type == type).first()
             element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
             for j in element_colors:
                 range_color = j.rangeColor
-                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to,
+                r = {"id": range_color.range.id, "name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to,
                      "color": range_color.color.id, "code": range_color.color.code}
                 t["range"].append(r)
             dic["types"].append(t)
@@ -122,20 +122,8 @@ async def update_element(element_id: int, element: ElementsSchema):
                     elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
                     session.add(elementColor)
         session.commit()
-        dic = {"name": query.name, "code": query.code, "date": query.date, "types": []}
-        types = query.types
-        for type in types:
-            t = {"name": type.type.name, "range": []}
-            element_type = session.query(ElementType).filter(ElementType.element == query).filter(
-                ElementType.type == type).first()
-            element_colors = session.query(ElementColor).filter(ElementColor.elementType == element_type).all()
-            for j in element_colors:
-                range_color = j.rangeColor
-                r = {"name": range_color.range.name, "of": range_color.range.of, "to": range_color.range.to,
-                     "color": range_color.color.id}
-                t["range"].append(r)
-            dic["types"].append(t)
-        return dic
+
+        return wrap_type_element(query)
     return {"error": "Not Found"}
 
 

@@ -47,7 +47,11 @@ async def get_works_for_organization(organization_id: int):
     #print(lst)
     #f = session.query(Field).filter(Field.id.in_(lst)).all()
     #print('f', f)
-    works = session.query(Work).options(selectinload(Work.field)).filter(Work.field.has(Field.id.in_(lst))).all()
+    works = []
+    for i in lst:
+        work = session.query(Work).options(selectinload(Work.field)).filter(Work.fieldId == i).first()
+        works.append(work)
+    #Кидает ошибку #works = session.query(Work).options(selectinload(Work.field)).filter(Work.field.has(Field.id.in_(lst))).all()
     # works = organization.works
     return works
 
