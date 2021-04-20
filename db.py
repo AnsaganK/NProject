@@ -11,7 +11,7 @@ DATABASE_URL = (
     f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 )
 engine = sqlalchemy.create_engine(
-    DATABASE_URL
+    DATABASE_URL, client_encoding='utf8'
 )
 
 Session = sessionmaker()

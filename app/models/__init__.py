@@ -17,7 +17,7 @@ DATABASE_URL = (
 #DATABASE_URL = "postgresql://postgres:12345@127.0.0.1:5432/navia"
 
 engine = sqlalchemy.create_engine(
-    DATABASE_URL, pool_pre_ping=True
+    DATABASE_URL, pool_pre_ping=True, client_encoding='utf8'
 )
 
 Base = declarative_base()

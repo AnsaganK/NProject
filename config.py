@@ -10,7 +10,7 @@ DATABASE_URL = (
     f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 )
 engine = sqlalchemy.create_engine(
-    DATABASE_URL, pool_pre_ping=True
+    DATABASE_URL, pool_pre_ping=True, client_encoding='utf8'
 )
 
 Base = declarative_base()
