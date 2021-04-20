@@ -131,12 +131,12 @@ async def get_order_group():
     for i in query:
         a = i.__dict__
         zero = 0
-        for j in query.orders.all():
+        for j in i.orders.all():
             c = len(j.cells)
             zero += c
 
         a["cellsCount"] = zero
-        a["orderCount"] = len(query.orders.all())
+        a["orderCount"] = len(i.orders.all())
     return query
 
 
