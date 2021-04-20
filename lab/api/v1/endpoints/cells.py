@@ -84,7 +84,7 @@ async def resultColor(order_id: int):
 
 def changeColor(elementColor, value):
     for i in elementColor:
-        if i.rangeColor.range.of<value and i.rangeColor.range.to>=value:
+        if i.rangeColor.range.of<=value and i.rangeColor.range.to>value:
             return i.rangeColor.color.code
     return None
 

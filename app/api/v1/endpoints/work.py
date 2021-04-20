@@ -42,7 +42,7 @@ async def get_works_for_organization(organization_id: int):
     if not organization:
         return {"error": "Организаци не найдена"}
 
-    fields = organization.fields
+    fields = session.query(Field).filter(Field.organizationId == organization.id).all()
     lst = [i.id for i in fields]
     #print(lst)
     #f = session.query(Field).filter(Field.id.in_(lst)).all()
