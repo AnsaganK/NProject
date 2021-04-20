@@ -1,3 +1,4 @@
+'''
 import sqlalchemy
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy import Integer, String, Column
@@ -14,3 +15,4 @@ class Permission(Base):
     def __repr__(self):
         return "<Permission ({})>".format(self.name)
 
+'''
