@@ -7,7 +7,7 @@ import time
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_elements():
     query = session.query(Color).all()
     return query
