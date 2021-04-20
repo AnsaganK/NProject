@@ -16,12 +16,7 @@ app.include_router(lab_router, prefix=settings.API_V1_STR)
 #app.include_router(app_router, prefix=settings.API_V1_STR)
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:8000",
-    "*"
+    "*",
 ]
 app.add_middleware(
     CORSMiddleware,
