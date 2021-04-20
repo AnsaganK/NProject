@@ -1,10 +1,7 @@
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
+from config import DB_USER, DB_PASSWORD, DB_HOST, DB_NAME
 
-DB_USER = "admin"
-DB_PASSWORD = "4SvjIp54HhTN"
-DB_HOST = "127.0.0.1"
-DB_NAME = "navistar"
 
 DATABASE_URL = (
     f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"

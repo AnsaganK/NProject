@@ -20,7 +20,7 @@ async def get_permission(permission_id: int):
     return {"error": "Not Found"}
 
 
-@router.post("/")
+@router.post("")
 async def create_permission(permission: PermissionSchema):
     query = Permission(name=permission.name, code=permission.code)
     for i in session.query(Permission).all():

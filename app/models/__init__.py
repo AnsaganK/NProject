@@ -1,6 +1,7 @@
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 
+
 DB_USER = "admin"
 DB_PASSWORD = "4SvjIp54HhTN"
 DB_HOST = "127.0.0.1"

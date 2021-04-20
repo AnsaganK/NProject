@@ -21,7 +21,7 @@ async def get_mini_status(mini_status_id: int):
     return {"error": "Not Found"}
 
 
-@router.post("/")
+@router.post("")
 async def create_mini_status(mini_status: MiniStatusSchema):
     query = MiniStatus(name=mini_status.name)
 

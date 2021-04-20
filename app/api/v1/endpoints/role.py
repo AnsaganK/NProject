@@ -21,7 +21,7 @@ async def get_roles():
     return query
 
 
-@router.post("/")
+@router.post("")
 async def create_roles(role: RoleCreateSchema):
     query = Role(name=role.name)
 

@@ -56,7 +56,7 @@ async def get_element(element_id: int):
         return {"error": "Элемент не найден"}
 
 
-@router.post("/")
+@router.post("")
 async def create_element(element: ElementsSchema):
     query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
     if not query.date:

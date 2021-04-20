@@ -203,7 +203,7 @@ async def update_order(order_id: int, order: OrderSchema):
             "grid": query.grid, "elements": query.elements, "way": query.way}
 
 
-@router.post("/")
+@router.post("")
 async def create_order(order: OrderSchema):
     date = int(time.time()) * 1000
     query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid,

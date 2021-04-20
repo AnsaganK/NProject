@@ -21,7 +21,7 @@ async def get_status(status_id: int):
     return {"error": "Not Found"}
 
 
-@router.post("/")
+@router.post("")
 async def create_status(status: StatusSchema):
     query = Status(name=status.name, color=status.color)
 

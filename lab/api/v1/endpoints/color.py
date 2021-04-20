@@ -21,7 +21,7 @@ async def get_element(color_id: int):
     return {"error": "Not Found"}
 
 
-@router.post("/")
+@router.post("")
 async def create_element(color: ColorSchema):
     query = Color(name=color.name, code=color.code)
 
