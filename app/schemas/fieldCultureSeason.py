@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from pydantic.types import Optional
+from pydantic.types import Optional, Json
 from app.schemas.field import FieldSchema
 
 class FieldCultureSeasonSchema(BaseModel):
@@ -25,7 +25,6 @@ class CreateFieldCultureSeasonSchema(BaseModel):
     irrigationTypeId: int
     tillageId: int
     sort: Optional[str] = None
-
     sowingDate: int
     cleaningDate: int
 
