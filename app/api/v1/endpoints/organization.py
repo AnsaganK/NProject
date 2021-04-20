@@ -52,11 +52,11 @@ class RoleList(str, Enum):
 async def get_users_for_organization(organization_id: int, group: RoleList):
     # organization = session.query(Organization).filter(Organization.id == organization_id).first()
     if group == "admin":
-        role = session.query(Role).filter(Role.name == "Администратор организации").first()
+        role = session.query(Role).filter(Role.name == "Organization admin").first()
         users = session.query(User).filter(User.organizationId == organization_id).options(selectinload(User.roles)).filter(User.roles.any(Role.id.in_([role.id]))).all()
         return users
     if group == "employer":
-        role = session.query(Role).filter(Role.name == "Сотрудник").first()
+        role = session.query(Role).filter(Role.name == "Organization employer").first()
         users = session.query(User).filter(User.organizationId == organization_id).options(selectinload(User.roles)).filter(User.roles.any(Role.id.in_([role.id]))).all()
         return users
     if group == "all":
@@ -122,7 +122,7 @@ async def create_organization_user(ou: OrganizationUserSchema):
 
         organizationQuery.selectedSeason = season
 
-        roleName = "Администратор организации"
+        roleName = "Organization admin"
         role = session.query(Role).filter(Role.name == roleName).first()
         userQuery.organization = organizationQuery
         if not role:
@@ -152,7 +152,7 @@ async def add_admin(user: FullUserSchema):
     if not OrganizationQuery:
         return {"error": "Организация не найдена"}
 
-    roleName = "Администратор организации"
+    roleName = "Organization admin"
     role = session.query(Role).filter(Role.name == roleName).first()
     UserQuery.organization = OrganizationQuery
     if not role:
@@ -183,7 +183,7 @@ async def add_admin(user: FullUserSchema):
     if not OrganizationQuery:
         return {"error": "Организация не найдена"}
 
-    roleName = "Сотрудник"
+    roleName = "Organization employer"
     role = session.query(Role).filter(Role.name == roleName).first()
     UserQuery.organization = OrganizationQuery
     if not role:
