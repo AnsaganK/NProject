@@ -25,7 +25,7 @@ async def get_organizations():
     query = session.query(Organization).all()
     for i in query:
         a = i.__dict__
-        a["usersCount"] = session.query(User).join(Organization).filter(Organization.id == a["id"]).count()
+        a["usersCount"] = len(query.user)
     return query
 
 
@@ -37,9 +37,8 @@ async def get_organization(organization_id: int):#, token: str = Depends(JWTBear
     query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(
         selectinload(Organization.user)).filter(Organization.id == organization_id).first()
     if query:
-        countUsers = len(query.user)
         a = query.__dict__
-        a["usersCount"] = countUsers
+        a["usersCount"] = len(query.user)
         return query
     return {"error": "Not Found"}
 
