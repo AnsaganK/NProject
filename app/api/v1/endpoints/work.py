@@ -65,7 +65,7 @@ async def create_works(work: WorkSchema):
     if not field:
         return {"error": "Поле не найдено"}
 
-    status = session.query(MiniStatus).get(work.statusId)
+    status = session.query(MiniStatus).filter(MiniStatus.id == work.statusId).first()
     if not status:
         return {"error": "Статус не найдено"}
 
