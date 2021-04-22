@@ -109,7 +109,7 @@ async def get_order_points(orderGroupId: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderGroupId).all()
     return query
 
-@router.get("/order_points/group/{orderId}")
+@router.get("/order_points/order/{orderId}")
 async def get_order_points(orderId: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderId == orderId).all()
     return query
