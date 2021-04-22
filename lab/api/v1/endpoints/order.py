@@ -4,6 +4,7 @@ from lab.models.order import Order, OrderCells, OrderGroup, OrderCellsStatus
 from app.models.organization import Organization
 from lab.models.elements import Elements
 from lab.models.cells import Cells
+from lab.models.orderPoints import OrderPoints
 from lab.models.status import Status
 from lab.models.mini_status import MiniStatus
 from app.models.field import Field
@@ -36,6 +37,17 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
             return orderCells
     return {"error": "У вас нет такой роли"}
 
+def PointsToGeoJson(points):
+    for point in points:
+        p = {"type": "Point",
+            "coordinates": [point, 10]
+            }
+        print(point)
+
+@router.get("/selected_points/{order_id}")
+async def get_points_for_order(order_id: int):
+    query = session.query(OrderPoints).filter(OrderPoints.orderId == order_id).all()
+    return query
 
 @router.get("/groups/{group_id}")
 async def get_order_group_id(group_id: int):
