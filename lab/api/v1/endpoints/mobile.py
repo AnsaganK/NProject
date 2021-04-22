@@ -91,6 +91,13 @@ async def get_orders_for_organization(organization_id: int):
 @router.post("/order_points")
 async def create_order_points(orderPoints: OrderPointsSchema):
     query = OrderPoints(dateCreate=orderPoints.dateCreate, points=orderPoints.points)
+    isData = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderPoints.orderGroupId).filter(OrderPoints.orderId == orderPoints.orderId).first()
+    if isData:
+        isData.dateCreate = orderPoints.dateCreate
+        isData.points = orderPoints.points
+        session.add(isData)
+        session.commit()
+        return {"status": "updated"}
     order = session.query(Order).filter(Order.id == orderPoints.orderId).first()
     orderGroup = session.query(OrderGroup).filter(OrderGroup.id == orderPoints.orderGroupId).first()
     query.order = order
