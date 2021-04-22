@@ -93,7 +93,7 @@ async def get_orders_for_organization(organization_id: int):
 @router.post("/order_points")
 async def create_order_points(orderPoints: OrderPointsSchema):
     query = OrderPoints(dateCreate=orderPoints.dateCreate,
-                        points={"latitude": orderPoints.latitude, "longitude": orderPoints.longitude})
+                        points=orderPoints.points)
     isData = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderPoints.orderGroupId).filter(
         OrderPoints.orderId == orderPoints.orderId).first()
     if isData:
