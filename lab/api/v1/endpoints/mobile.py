@@ -98,3 +98,19 @@ async def create_order_points(orderPoints: OrderPointsSchema):
     session.add(query)
     session.commit()
     return {"status": "saved"}
+
+@router.get("/order_points")
+async def get_order_points():
+    query = session.query(OrderPoints).all()
+    return query
+
+@router.get("/order_points/group/{orderGroupId}")
+async def get_order_points(orderGroupId: int):
+    query = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderGroupId).all()
+    return query
+
+@router.get("/order_points/group/{orderId}")
+async def get_order_points(orderId: int):
+    query = session.query(OrderPoints).filter(OrderPoints.orderId == orderId).all()
+    return query
+
