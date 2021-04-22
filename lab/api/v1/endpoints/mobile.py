@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from sqlalchemy import desc
 from sqlalchemy.orm import selectinload
@@ -5,6 +7,8 @@ from sqlalchemy.orm import selectinload
 from app.models.organization import Organization
 from db import session
 from lab.models.order import OrderGroup, Order
+from lab.models.orderPoints import OrderPoints
+from lab.schemas.orderPoints import OrderPointsSchema
 
 router = APIRouter()
 
@@ -83,3 +87,14 @@ async def get_orders_for_organization(organization_id: int):
     query = session.query(OrderGroup).options(selectinload(OrderGroup.orders)).filter(
         OrderGroup.organizationId == organization_id).all()
     return {"orders": query}
+
+@router.post("/order_points")
+async def create_order_points(orderPoints: OrderPointsSchema):
+    query = OrderPoints(dateCreate=orderPoints.dateCreate, points=json.loads(orderPoints.points))
+    order = session.query(Order).filter(Order.id == orderPoints.orderId).first()
+    orderGroup = session.query(OrderGroup).filter(OrderGroup.id == orderPoints.orderGroupId).first()
+    query.order = order
+    query.orderGroup = orderGroup
+    session.add(query)
+    session.commit()
+    return {"status": "saved"}

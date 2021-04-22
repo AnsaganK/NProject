@@ -42,14 +42,10 @@ async def get_works_for_organization(organization_id: int):
     if not organization:
         return {"error": "Организаци не найдена"}
 
-    fields = session.query(Field).filter(Field.organizationId == organization.id).all()
-    lst = [i.id for i in fields]
-    #print(lst)
-    #f = session.query(Field).filter(Field.id.in_(lst)).all()
-    #print('f', f)
+    lst = [i.id for i in organization.fields]
     works = []
     for i in lst:
-        work = session.query(Work).options(selectinload(Work.field)).filter(Work.fieldId == i).first()
+        work = session.query(Work).filter(Work.fieldId == i).first()
         works.append(work)
     #Кидает ошибку #works = session.query(Work).options(selectinload(Work.field)).filter(Work.field.has(Field.id.in_(lst))).all()
     # works = organization.works
