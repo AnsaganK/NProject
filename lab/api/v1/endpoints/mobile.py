@@ -38,7 +38,8 @@ async def get_order_group():
 
 @router.get("/download_orders/{order_group_id}")
 async def downloads_order_groups(order_group_id: int):
-    query = session.query(OrderGroup).filter(OrderGroup.id == order_group_id).options(selectinload(OrderGroup.orders)).first()
+    query = session.query(OrderGroup).filter(OrderGroup.id == order_group_id).options(
+        selectinload(OrderGroup.orders)).first()
     return query
 
 
@@ -88,10 +89,13 @@ async def get_orders_for_organization(organization_id: int):
         OrderGroup.organizationId == organization_id).all()
     return {"orders": query}
 
+
 @router.post("/order_points")
 async def create_order_points(orderPoints: OrderPointsSchema):
-    query = OrderPoints(dateCreate=orderPoints.dateCreate, points=orderPoints.points)
-    isData = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderPoints.orderGroupId).filter(OrderPoints.orderId == orderPoints.orderId).first()
+    query = OrderPoints(dateCreate=orderPoints.dateCreate,
+                        points={"latitude": orderPoints.latitude, "longitude": orderPoints.longitude})
+    isData = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderPoints.orderGroupId).filter(
+        OrderPoints.orderId == orderPoints.orderId).first()
     if isData:
         isData.dateCreate = orderPoints.dateCreate
         isData.points = orderPoints.points
@@ -106,15 +110,18 @@ async def create_order_points(orderPoints: OrderPointsSchema):
     session.commit()
     return {"status": "saved"}
 
+
 @router.get("/order_points")
 async def get_order_points():
     query = session.query(OrderPoints).all()
     return query
 
+
 @router.get("/order_points/group/{orderGroupId}")
 async def get_order_points(orderGroupId: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderGroupId == orderGroupId).all()
     return query
+
 
 @router.get("/order_points/order/{orderId}")
 async def get_order_points(orderId: int):

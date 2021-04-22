@@ -10,6 +10,8 @@ class BaseOrderPointsSchema(BaseModel):
 
 
 class OrderPointsSchema(BaseOrderPointsSchema):
+    latitude: float
+    longitude: float
     pass
 
 
