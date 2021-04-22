@@ -34,8 +34,7 @@ async def get_organizations():
 async def get_organization(organization_id: int):#, token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
     #print("userId: ", user_id)f
-    query = session.query(Organization).options(selectinload(Organization.orderGroup)).options(
-        selectinload(Organization.user)).filter(Organization.id == organization_id).first()
+    query = session.query(Organization).options(selectinload(Organization.orderGroup)).filter(Organization.id == organization_id).first()
     if query:
         a = query.__dict__
         a["usersCount"] = len(query.user)
