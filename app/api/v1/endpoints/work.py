@@ -105,10 +105,10 @@ async def create_works(work: WorkSchema):
 
 @router.get("/{work_id}")
 async def get_detail_work(work_id: int):
-    query = session.query(Work).options(selectinload(Work.users)).options(selectinload(Work.cars)).options(
-        selectinload(Work.field)).options(selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
+    query = session.query(Work).options(selectinload(Work.users)).options(selectinload(Work.cars)).options(selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
         selectinload(Work.status)).filter(Work.id == work_id).first()
     if query:
+        f = query.field
         return query
     return {"error": "Работа не найдена"}
 
