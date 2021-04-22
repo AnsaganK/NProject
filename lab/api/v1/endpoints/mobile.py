@@ -114,3 +114,12 @@ async def get_order_points(orderId: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderId == orderId).all()
     return query
 
+
+@router.delete("/order_points/{order_point_id}")
+async def delete_order_points(order_point_id: int):
+    query = session.query(OrderPoints).filter(OrderPoints.id == order_point_id).first()
+    if query:
+        session.delete(query)
+        session.commit()
+        return {"status": "Deleted"}
+    return {"status": "Not found object"}
