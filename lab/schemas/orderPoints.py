@@ -5,7 +5,7 @@ from pydantic.types import List
 class BaseOrderPointsSchema(BaseModel):
     orderId: int
     orderGroupId: int
-    points: dict
+    points: List[dict]
     dateCreate: int
 
 
