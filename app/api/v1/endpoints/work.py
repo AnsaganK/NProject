@@ -31,7 +31,7 @@ async def get_field_for_organization(field_id: int):
     if not field:
         return {"error": "Поле не найдена"}
 
-    works = field.works
+    works = session.query(Work).filter(Work.fieldId == field.id).all()
     return works
 
 
