@@ -25,7 +25,7 @@ async def get_organizations():
     query = session.query(Organization).all()
     for i in query:
         a = i.__dict__
-        a["usersCount"] = len(query.user)
+        a["usersCount"] = len(i.user)
     return query
 
 
