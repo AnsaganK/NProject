@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from pydantic.types import List
 
 class OrganizationSchema(BaseModel):
     name: str
@@ -7,3 +7,8 @@ class OrganizationSchema(BaseModel):
 
 class OrganizationGetId(BaseModel):
     id: int
+
+
+class OrganizationUserSchema(OrganizationSchema):
+    user: List[dict]
+    selectedSeasonId: int

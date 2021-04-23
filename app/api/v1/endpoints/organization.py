@@ -30,7 +30,7 @@ async def get_organizations():
 
 
 
-@router.get("/{organization_id}")
+@router.get("/{organization_id}", response_model=OrganizationUserSchema)
 async def get_organization(organization_id: int):#, token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
     #print("userId: ", user_id)f
@@ -38,7 +38,7 @@ async def get_organization(organization_id: int):#, token: str = Depends(JWTBear
     if query:
         a = query.__dict__
         a["usersCount"] = len(query.user)
-        return a
+        return query
     return {"error": "Not Found"}
 
 class RoleList(str, Enum):
