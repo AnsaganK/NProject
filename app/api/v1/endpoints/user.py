@@ -39,7 +39,7 @@ def get_all():
 async def user_detail(user_id: int):
     user = session.query(User).options(selectinload(User.organization)).filter(User.id == user_id).first()
     if user:
-        return user
+        return user.__dict__
     return {"error": "There is no user with this ID"}
 
 
