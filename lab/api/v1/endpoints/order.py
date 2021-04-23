@@ -175,10 +175,6 @@ async def get_order(order_id: int):
             print(i.types)
             for j in i.types:
                 print(j)
-        if len(query.points[0].points) != 0:
-            query.__dict__["isPoints"] = True
-        else:
-            query.__dict__["isPoints"] = False
         return query
     return {"error": "Not Found"}
 
