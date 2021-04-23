@@ -38,11 +38,12 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
     return {"error": "У вас нет такой роли"}
 
 
-def PointsToGeoJson(points):
+def PointsToGeoJson(query):
     featureCollection = {"type": "FeatureCollection",
                          "features": []}
     pointsList = []
-    for point in points:
+    for q in query:
+        point = q.points
         p = {"type": "Feature",
             "geometry": {
                 "type": "Point",
@@ -58,7 +59,7 @@ def PointsToGeoJson(points):
 @router.get("/selected_points/{order_id}")
 async def get_points_for_order(order_id: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderId == order_id).all()
-    points = PointsToGeoJson(query.points)
+    points = PointsToGeoJson(query)
     return points
 
 
