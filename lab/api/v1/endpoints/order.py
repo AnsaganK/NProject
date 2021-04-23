@@ -48,7 +48,7 @@ def PointsToGeoJson(points):
                 "type": "Point",
                 "coordinates": [point["longitude"], point["latitude"]]
             },
-            "properties": {"date": point["dateCreate"]}
+            "properties": {"date": point["dateCreate"], "id": point["id"]}
             }
         pointsList.append(p)
 
