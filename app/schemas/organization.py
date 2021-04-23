@@ -10,5 +10,6 @@ class OrganizationGetId(BaseModel):
 
 
 class OrganizationUserSchema(OrganizationSchema):
+    id: int
     user: List[dict]
     selectedSeasonId: int

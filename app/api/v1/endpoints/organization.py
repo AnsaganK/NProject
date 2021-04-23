@@ -30,14 +30,14 @@ async def get_organizations():
 
 
 
-@router.get("/{organization_id}", response_model=OrganizationUserSchema)
+@router.get("/{organization_id}")
 async def get_organization(organization_id: int):#, token: str = Depends(JWTBearer())):
     #user_id = decodeJWT(token)
     #print("userId: ", user_id)f
     query = session.query(Organization).options(selectinload(Organization.orderGroup)).filter(Organization.id == organization_id).first()
     if query:
         a = query.__dict__
-        a["usersCount"] = len(query.user)
+        a["usersCount"] = query.user.count()
         return query
     return {"error": "Not Found"}
 
