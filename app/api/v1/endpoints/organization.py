@@ -38,7 +38,9 @@ async def get_organization(organization_id: int):#, token: str = Depends(JWTBear
     if query:
         a = query.__dict__
         a["usersCount"] = session.query(User).filter(User.organizationId == query.id).count()
-        return query
+        users = session.query(User).filter(User.organizationId == query.id).all()
+        a["user"] = users
+        return a
     return {"error": "Not Found"}
 
 class RoleList(str, Enum):
