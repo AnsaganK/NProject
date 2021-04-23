@@ -67,6 +67,8 @@ async def get_order_group_id(group_id: int):
     # query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
     query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(
         selectinload(OrderGroup.orders)).filter(OrderGroup.id == group_id).first()
+    if not query.orders:
+        return {"error":"В этом заказе нет полей"}
     for i in query.orders:
         i.__dict__['fieldName'] = i.field.name
     if query:
