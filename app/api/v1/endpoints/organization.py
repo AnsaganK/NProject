@@ -39,7 +39,7 @@ async def get_organization(organization_id: int):#, token: str = Depends(JWTBear
         a = query.__dict__
         a["usersCount"] = session.query(User).filter(User.organizationId == query.id).count()
         users = session.query(User).filter(User.organizationId == query.id).all()
-        a["user"] = users
+        a["users"] = users
         return a
     return {"error": "Not Found"}
 
