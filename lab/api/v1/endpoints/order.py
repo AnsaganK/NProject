@@ -175,6 +175,9 @@ async def get_order(order_id: int):
             print(i.types)
             for j in i.types:
                 print(j)
+        print(query.points)
+        print(query.points[0])
+        print(query.points[0].points)
         if len(query.points[0].points["features"]) != 0:
             query.__dict__["isPoints"] = True
         else:
