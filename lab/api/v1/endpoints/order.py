@@ -1,3 +1,4 @@
+from app.models.user import User
 from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
 from lab.models.order import Order, OrderCells, OrderGroup, OrderCellsStatus
@@ -256,8 +257,9 @@ async def create_order(order: OrderSchema):
         organization = session.query(Organization).filter(Organization.id == order.organizationId).first()
         if not organization:
             return {"error": "Not Found Organization"}
+        user = session.query(User).filter(User.id == order.userId).first()
         orderGroup = OrderGroup(name=organization.name + " | " + str(date) + " | " + str(organization.id), date=date,
-                                organization=organization)
+                                organization=organization, user=user)
 
         for i in order.elements:
             element = session.query(Elements).filter(Elements.id == i).first()

@@ -8,13 +8,16 @@ class OrderCellsStatusSchema(BaseModel):
     statusId: int
     miniStatusId: int
 
+
 class OrderGroupSchema(BaseModel):
     name: Optional[str] = Field(None)
     date: Optional[int] = Field(None)
+    userId: int
     organizationId: int
 
     class Config:
         orm_mode = True
+
 
 class OrderSchema(BaseModel):
     name: Optional[str] = Field(None)
@@ -27,6 +30,7 @@ class OrderSchema(BaseModel):
     way: dict
     cellCount: int
     orderGroupId: Optional[int] = Field(None)
+    userId: Optional[int] = Field(None)
 
     class Config:
         orm_mode = True
