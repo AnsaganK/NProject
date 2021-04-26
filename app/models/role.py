@@ -8,6 +8,7 @@ class Role(Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    title = Column(String)
     permissions = relationship("Permission", secondary=RolesPermissions, backref="roles")
 
     def __repr__(self):

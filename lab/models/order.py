@@ -26,13 +26,13 @@ OrderOrganization = Table(
     Column('organizationId', Integer, ForeignKey('organization.id'))
 )
 
-#OrderCells = Table(
+# OrderCells = Table(
 #    'OrderCells',
 #    Base.metadata,
 #    Column('id', Integer, primary_key=True),
 #    Column('orderId', Integer, ForeignKey('orders.id')),
 #    Column('cellId', Integer, ForeignKey('cells.id')),
-#)
+# )
 
 
 OrderField = Table(
@@ -43,6 +43,7 @@ OrderField = Table(
     Column('fieldId', Integer, ForeignKey('fields.id')),
 )
 
+
 class OrderCells(Base):
     __tablename__ = "OrderCells"
     id = Column(Integer, primary_key=True)
@@ -52,11 +53,12 @@ class OrderCells(Base):
     cellId = Column(Integer, ForeignKey('cells.id'))
     date = Column(BigInteger)
 
-    #currentStatusId = Column(Integer, ForeignKey("OrderCellsStatus.id"))
-    #currentStatus = relationship("OrderCellsStatus", backref="cells", foreign_keys=[currentStatusId])
+    # currentStatusId = Column(Integer, ForeignKey("OrderCellsStatus.id"))
+    # currentStatus = relationship("OrderCellsStatus", backref="cells", foreign_keys=[currentStatusId])
 
     def __repr__(self):
         return "<orderCells ({})>".format(self.id)
+
 
 class OrderCellsStatus(Base):
     __tablename__ = "OrderCellsStatus"
@@ -91,6 +93,7 @@ class OrderCellsResult(Base):
     def __repr__(self):
         return "result ({})".format(self.id)
 
+
 class OrderGroup(Base):
     __tablename__ = "OrderGroup"
 
@@ -102,6 +105,7 @@ class OrderGroup(Base):
     user = relationship("User", backref="userOrderGroup")
     elements = relationship('Elements', secondary=OrderGroupElements, backref="orderGroups")
     date = Column(BigInteger)
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -118,10 +122,9 @@ class Order(Base):
     way = Column(JSON)
     cellCount = Column(Integer)
     selectedPoints = Column(JSON)
-    
+
     groupId = Column(Integer, ForeignKey("OrderGroup.id"))
     group = relationship('OrderGroup', backref="orders")
-
 
     def __repr__(self):
         return "<order ({})>".format(self.id)
