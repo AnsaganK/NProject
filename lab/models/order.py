@@ -100,9 +100,9 @@ class OrderGroup(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     organizationId = Column(Integer, ForeignKey('organization.id'))
-    organization = relationship('Organization', backref="orderGroup")
+    organization = relationship('Organization', backref="orderGroup", foreign_keys=[organizationId])
     userId = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", backref="userOrderGroup")
+    user = relationship("User", backref="userOrderGroup", foreign_keys=[userId])
     elements = relationship('Elements', secondary=OrderGroupElements, backref="orderGroups")
     date = Column(BigInteger)
 
