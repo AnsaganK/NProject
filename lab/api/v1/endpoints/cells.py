@@ -4,7 +4,7 @@ from db import session
 from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
-from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus
+from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
 from lab.schemas.cells import OrderCellsResultSchema
 import time
@@ -116,6 +116,16 @@ async def resultColor(order_id: int, element_id: int):
 #    cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.orderId == order_id).all()
 #    return cells
 
+
+@router.get("/order_group/{order_group_id}")
+async def get_cells_for_order_group(order_group_id: int):
+    orderGroup = session.query(OrderGroup).filter(OrderGroup.id == order_group_id).first()
+    cells = []
+    for order in orderGroup.orders:
+        order_cells = order.cells
+        cells.append(order_cells)
+
+    return cells
 
 @router.get("/{order_id}")
 async def get_cells_for_order(order_id: int):
