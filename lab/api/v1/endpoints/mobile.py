@@ -5,6 +5,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import selectinload
 
 from app.models.organization import Organization
+from app.models.user import User
 from db import session
 from lab.models.order import OrderGroup, Order
 from lab.models.orderPoints import OrderPoints
@@ -19,8 +20,11 @@ async def get_organizations():
     return {"organizations": organizations}
 
 
-@router.get("/order_groups")
-async def get_order_group():
+@router.get("/order_groups/{user_id}")
+async def get_order_group(user_id: int):
+    user = session.query(User).filter(User.id == user_id).first()
+    if not user:
+        return {"orders": []}
     query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).options(
         selectinload(OrderGroup.organization)).options(selectinload(OrderGroup.orders)).all()
     for i in query:
