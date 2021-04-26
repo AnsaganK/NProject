@@ -5,6 +5,7 @@ from app.schemas.permission import PermissionSchema
 
 class RoleCreateSchema(BaseModel):
     name: str
+    title: str
 
 
 class RoleSchema(BaseModel):
