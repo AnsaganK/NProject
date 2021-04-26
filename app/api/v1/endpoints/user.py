@@ -42,6 +42,11 @@ async def user_detail(user_id: int):
         return user.__dict__
     return {"error": "There is no user with this ID"}
 
+@router.get("/roles/{role_id}")
+async def get_ysers_for_role(role_id: int):
+    role = session.query(Role).filter(Role.id == role_id).first()
+    users = role.users
+    return users
 
 @router.put("/{user_id}")
 async def user_update(user_id: int, user: allFullUserSchema):
