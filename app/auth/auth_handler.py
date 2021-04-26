@@ -16,6 +16,8 @@ def token_response(token: str):
 def signJWT(user: Dict) -> Dict[str, str]:
     payload = {
         "id": user["id"],
+        "firstname": user["firstName"],
+        "lastname": user["lastName"],
         "roles": user["roles"],
         "expires": time.time()+60000
     }
