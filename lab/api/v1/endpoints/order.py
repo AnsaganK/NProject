@@ -59,8 +59,10 @@ def PointsToGeoJson(points):
 @router.get("/selected_points/{order_id}")
 async def get_points_for_order(order_id: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderId == order_id).first()
-    points = PointsToGeoJson(query.points)
-    return points
+    if query.points:
+        points = PointsToGeoJson(query.points)
+        return points
+    return {}
 
 
 @router.get("/groups/{group_id}")
