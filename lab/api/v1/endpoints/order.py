@@ -180,7 +180,7 @@ async def get_order(order_id: int):
         selectinload(Order.elements)).filter(Order.id == order_id).first()
     group = session.query(OrderGroup).filter(OrderGroup.id == query.groupId).first()
     groupId = group.id
-    user = session.query(User).filter(User.userOrderGroup__id == groupId).first()
+    user = session.query(User).join(OrderGroup).filter(OrderGroup.id == groupId).first()
     if query:
         for i in query.elements:
             print(i.types)
