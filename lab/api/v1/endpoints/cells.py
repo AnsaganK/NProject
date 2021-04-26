@@ -123,7 +123,8 @@ async def get_cells_for_order_group(order_group_id: int):
     cells = []
     for order in orderGroup.orders:
         order_cells = order.cells
-        cells.append(order_cells)
+        for i in order_cells:
+            cells.append(i)
 
     return cells
 
