@@ -172,6 +172,8 @@ async def get_order_group():
 async def get_order(order_id: int):
     query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elements)).options(
         selectinload(Order.elements)).filter(Order.id == order_id).first()
+    user = query.orderGroup.user
+    print(user)
     if query:
         for i in query.elements:
             print(i.types)
