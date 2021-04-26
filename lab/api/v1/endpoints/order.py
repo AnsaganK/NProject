@@ -153,7 +153,7 @@ async def get_cells_for_order(status: StatusIdSchema):
 
 @router.get("/groups")
 async def get_order_group():
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(selectinload(OrderGroup.user)).options(
         selectinload(OrderGroup.organization)).all()
     for i in query:
         a = i.__dict__
