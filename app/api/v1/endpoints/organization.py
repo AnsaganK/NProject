@@ -79,7 +79,7 @@ async def update_organization(organization_id: int, organization: OrganizationSc
     if query:
         query.name = organization.name
         query.bin = organization.bin
-        return {"message": "Organization ({}) updated".format(query.name)}
+        return {**query.__dict__}
     return {"error": "Not Found"}
 
 
