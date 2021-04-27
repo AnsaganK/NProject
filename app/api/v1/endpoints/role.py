@@ -23,7 +23,7 @@ async def get_roles():
 
 @router.post("")
 async def create_roles(role: RoleCreateSchema):
-    query = Role(name=role.name)
+    query = Role(name=role.name, title=role.title)
 
     for i in session.query(Role).all():
         if i.name == role.name:
