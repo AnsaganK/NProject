@@ -50,7 +50,7 @@ async def get_ysers_for_role(role_id: int):
 
 @router.put("/{user_id}")
 async def user_update(user_id: int, user: allFullUserSchema):
-    query = session.query(User).filter(User.id == user_id).first()
+    query = session.query(User).filter(User.id == user_id).options(selectinload(User.roles)).first()
     organization = session.query(Organization).filter(Organization.id == user.organizationId).first()
     if not organization:
         return {"error": "Организация не найдена"}
