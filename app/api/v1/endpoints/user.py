@@ -43,7 +43,7 @@ async def user_detail(user_id: int):
     return {"error": "There is no user with this ID"}
 
 @router.get("/roles/{role_id}")
-async def get_ysers_for_role(role_id: int):
+async def get_users_for_role(role_id: int):
     role = session.query(Role).filter(Role.id == role_id).first()
     users = role.users
     return users

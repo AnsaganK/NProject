@@ -31,7 +31,7 @@ class UserLoginSchema(BaseModel):
     password: str = Field(...)
 
 class userForRolesSchema(UserSchema):
-    role: Optional[List[int]] = Field(None)
+    roles: Optional[List[int]] = Field(None)
 
 
 class allFullUserSchema(FullUserSchema):
