@@ -25,7 +25,7 @@ async def get_order_group(user_id: int):
     user = session.query(User).filter(User.id == user_id).first()
     if not user:
         return {"orders": []}
-    query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).options(
+    query = session.query(OrderGroup).order_by(desc(OrderGroup.date)).filter(OrderGroup.userId == user_id).options(
         selectinload(OrderGroup.organization)).options(selectinload(OrderGroup.orders)).all()
     for i in query:
         a = i.__dict__
