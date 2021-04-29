@@ -28,6 +28,8 @@ async def edit_multiple_cells(order_id: int, cells: EditCellsArray):
         print(cell.orderId)
         print(cell.cell.code)
         status = session.query(Status).filter(Status.id == i.statusId).first()
+        print(status)
+        print(miniStatus)
         miniStatus = session.query(Status).filter(Status.id == i.miniStatusId).first()
         if cell and status and miniStatus:
             zero += 1
