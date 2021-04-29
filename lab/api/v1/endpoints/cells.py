@@ -4,6 +4,7 @@ from db import session
 from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
+from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup
 from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
@@ -24,19 +25,12 @@ async def edit_multiple_cells(order_id: int, cells: EditCellsArray):
     cellsList = []
     for i in cells.cells:
         cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id).filter(Cells.code == i.cellCode).first()
-        print(cell)
-        print(cell.orderId)
-        print(cell.cell.code)
         status = session.query(Status).filter(Status.id == i.statusId).first()
-        print(status)
-        print(miniStatus)
-        miniStatus = session.query(Status).filter(Status.id == i.miniStatusId).first()
+
+        miniStatus = session.query(MiniStatus).filter(MiniStatus.id == i.miniStatusId).first()
         if cell and status and miniStatus:
             zero += 1
             cellsList.append(i)
-            print(zero)
-            print(cellsList)
-            print(i)
             OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time())*1000)
     return cellsList
 
