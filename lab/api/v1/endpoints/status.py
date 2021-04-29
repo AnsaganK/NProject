@@ -45,6 +45,29 @@ async def create_status(status: StatusSchema):
 
     return {**status, "id": last_id}
 
+@router.put("/{status_id}")
+async def update_status(status_id: int, status: StatusSchema):
+    query = session.query(Status).filter(Status.id == status_id).first()
+    if query:
+        query.name = status.name
+        query.color = status.color
+
+        role = session.query(Role).filter(Role.id == status.roleEdit).first()
+        if not role:
+            return {"error": "Не найдена роль для изменения"}
+        query.role_edit = role
+
+        role1 = session.query(Role).filter(Role.id == status.roleSelect).first()
+        if not role1:
+            return {"error": "Не найдена роль для изменения"}
+        query.role_selection = role1
+
+        session.add(query)
+        session.commit()
+
+        return {**status.dict(), "id": query.id}
+    return {"error": "Статус не найден"}
+
 @router.delete("/{status_id}")
 async def delete_order(status_id: int):
     query = session.query(Status).filter(Status.id == status_id).first()

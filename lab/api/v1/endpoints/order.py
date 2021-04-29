@@ -31,11 +31,14 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
         if role.id == role_id or role.name == "admin":
             status = session.query(Status).filter(Status.role_selection_id == role_id).first()
             miniStatus = session.query(MiniStatus).filter(MiniStatus.name == "Готово").first()
-            orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(
+            if status and miniStatus:
+                orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(
                 OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
-            print(status)
-            print(orderCells)
-            return orderCells
+                print(status)
+                print(orderCells)
+                return orderCells
+            else:
+                return None
     return {"error": "У вас нет такой роли"}
 
 
