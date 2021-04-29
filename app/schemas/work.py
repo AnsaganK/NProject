@@ -27,6 +27,17 @@ class WorkSchema(BaseModel):
     cars: Optional[List[int]] = Field(None)
     geoJson: dict
 
+class UpdateWorkSchema(WorkSchema):
+    name: Optional[str]
+    description: Optional[str]
+    startDate: int
+    endDate: int
+    statusId: int
+    workTypeId: int
+    workSubTypeId: int
+    users: Optional[List[int]] = Field(None)
+    cars: Optional[List[int]] = Field(None)
+    geoJson: dict
 
 class createWorkSchema(BaseWorkSchema):
     id: int

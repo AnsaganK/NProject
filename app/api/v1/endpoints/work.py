@@ -11,7 +11,7 @@ from app.models.work import Work
 from app.models.workSubType import WorkSubType
 from app.models.workType import WorkType
 from app.schemas import ErrorSchema
-from app.schemas.work import WorkSchema, createWorkSchema
+from app.schemas.work import WorkSchema, createWorkSchema, UpdateWorkSchema
 from db import session
 from lab.models.mini_status import MiniStatus
 
@@ -23,6 +23,51 @@ async def get_works():
     query = session.query(Work).options(selectinload(Work.field)).all()
     return query
 
+
+@router.put("/{work_id}")
+async def update_work(work_id: int, work:UpdateWorkSchema):
+    query = session.query(Work).filter(Work.id == work_id).first()
+    field = query.field
+    status = session.query(MiniStatus).filter(MiniStatus.id == work.statusId).first()
+    if not status:
+        return {"error": "Статус не найдено"}
+
+    workType = session.query(WorkType).get(work.workTypeId)
+    if not workType:
+        return {"error": "Тип работы не найден"}
+
+    workSubType = session.query(WorkSubType).get(work.workSubTypeId)
+    if not workSubType:
+        return {"error": "Подтип не найден"}
+
+    if workSubType.groupId != workType.id:
+        return {"error": "Данный подтип работы не относитя к нужному типу работы"}
+
+    query.status = status
+    query.workType = workType
+    query.workSubType = workSubType
+    query.cars = []
+    for c in work.cars:
+        car = session.query(Car).filter(Car.id == c).first()
+        organization = field.organization
+        if car:
+            if car.organization == organization:
+                query.cars.append(car)
+            else:
+                return {"error": "У этой организации нет такого транспорта"}
+    query.users = []
+    for u in work.users:
+        user = session.query(User).filter(User.id == u).first()
+        organization = field.organization
+        if user:
+            if user.organization == organization:
+                query.users.append(user)
+            else:
+                return {"error": "У этой организации нет такого сотрудника"}
+    session.add(query)
+    session.commit()
+
+    return query
 
 @router.get("/field/{field_id}")
 async def get_field_for_organization(field_id: int):
@@ -96,7 +141,6 @@ async def create_works(work: WorkSchema):
                 query.users.append(user)
             else:
                 return {"error": "У этой организации нет такого сотрудника"}
-    # print(query)
     session.add(query)
     session.commit()
 
