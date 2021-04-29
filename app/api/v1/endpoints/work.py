@@ -27,6 +27,11 @@ async def get_works():
 @router.put("/{work_id}")
 async def update_work(work_id: int, work: UpdateWorkSchema):
     query = session.query(Work).filter(Work.id == work_id).first()
+    query.name = work.name
+    query.description = work.description
+    query.geoJson = work.geoJson
+    query.startDate = work.startDate
+    query.endDate = work.endDate
     field = query.field
     status = session.query(MiniStatus).filter(MiniStatus.id == work.statusId).first()
     if not status:
@@ -66,8 +71,8 @@ async def update_work(work_id: int, work: UpdateWorkSchema):
                 return {"error": "У этой организации нет такого сотрудника"}
     session.add(query)
     session.commit()
-
-    return {**query.__dict__}
+    query = session.query(Work).filter(Work.id == work_id).first()
+    return query
 
 @router.get("/field/{field_id}")
 async def get_field_for_organization(field_id: int):
