@@ -52,8 +52,8 @@ async def get_users_for_role(role_id: int):
 async def user_update(user_id: int, user: allFullUserSchema):
     query = session.query(User).filter(User.id == user_id).options(selectinload(User.roles)).first()
     organization = session.query(Organization).filter(Organization.id == user.organizationId).first()
-    if not organization:
-        return {"error": "Организация не найдена"}
+    if organization:
+        query.organization = organization
     if user:
         for i in session.query(User).all():
             if i.email == user.email and i.id != user_id:
@@ -63,7 +63,6 @@ async def user_update(user_id: int, user: allFullUserSchema):
         query.lastName = user.lastName
         query.email = user.email
         query.password = user.password
-        query.organization = organization
 
         query.roles = []
 
