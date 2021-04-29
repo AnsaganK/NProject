@@ -167,7 +167,7 @@ async def get_cells_for_order(order_id: int):
                 miniStatusName = st.miniStatus.name
             else:
                 miniStatusName = None
-            i.__dict__["currentStatus"] = {"statusName":statusName, "miniStatusName": miniStatusName}
+            i.__dict__["currentStatus"] = {"statusName":statusName, "statusId":st.status.id, "miniStatusId": st.miniStatus.id, "miniStatusName": miniStatusName}
     return cells
 
 @router.post("/result/{order_id}/{cell_code}")
