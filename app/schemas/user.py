@@ -14,7 +14,7 @@ class FullUserSchema(BaseModel):
     lastName: str = Field(...)
     email: EmailStr = Field(...)
     password: str = Field(...)
-    organizationId: int = Field(None)
+    organizationId: Optional[int] = Field(None)
     #role: List[int] = Field(None)
 
 class UserSchema(BaseModel):
