@@ -26,8 +26,10 @@ async def edit_multiple_cells(order_id: int, cells: EditCellsArray):
     for i in cells.cells:
         cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id).filter(Cells.code == i.cellCode).first()
         status = session.query(Status).filter(Status.id == i.statusId).first()
-
         miniStatus = session.query(MiniStatus).filter(MiniStatus.id == i.miniStatusId).first()
+        print(cell)
+        print(status)
+        print(miniStatus)
         if cell and status and miniStatus:
             zero += 1
             cellsList.append(i)
