@@ -8,3 +8,12 @@ class ResultList(BaseModel):
 
 class OrderCellsResultSchema(BaseModel):
     results: List[ResultList]
+
+
+class EditCellsArrayData(BaseModel):
+    cellCode: int
+    statusId: int
+    miniStatusId: int
+
+class EditCellsArray(BaseModel):
+    cells: List[EditCellsArrayData]

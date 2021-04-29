@@ -5,8 +5,9 @@ from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup
+from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
-from lab.schemas.cells import OrderCellsResultSchema
+from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray
 import time
 from sqlalchemy.orm import selectinload
 
@@ -15,6 +16,25 @@ router = APIRouter()
 @router.get("/status_name")
 async def status_name():
     return status_dict
+
+@router.post("/edit_selected/{order_id}")
+async def edit_multiple_cells(order_id: int, cells: EditCellsArray):
+    order = session.query(Order).filter(Order.id == order_id).first()
+    zero = 0
+    cellsList = []
+    for i in cells.cells:
+        cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id).filter(Cells.code == i.cellCode).first()
+        print(cell)
+        print(cell.orderId)
+        print(cell.cellCode)
+        status = session.query(Status).filter(Status.id == i.statusId).first()
+        miniStatus = session.query(Status).filter(Status.id == i.miniStatusId).first()
+        if cell and status and miniStatus:
+            zero += 1
+            cellsList.append(i)
+            OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time())*1000)
+    return cellsList
+
 
 @router.get("/history/{order_id}")
 async def get_history(order_id: int):
@@ -115,6 +135,8 @@ async def resultColor(order_id: int, element_id: int):
 #async def get_cells_for_order(order_id: int):
 #    cells = session.query(OrderCells).options(selectinload(OrderCells.cell)).filter(OrderCells.orderId == order_id).all()
 #    return cells
+
+
 
 
 @router.get("/order_group/{order_group_id}")
