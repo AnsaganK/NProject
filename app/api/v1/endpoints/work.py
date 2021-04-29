@@ -25,7 +25,7 @@ async def get_works():
 
 
 @router.put("/{work_id}")
-async def update_work(work_id: int, work:UpdateWorkSchema):
+async def update_work(work_id: int, work: UpdateWorkSchema):
     query = session.query(Work).filter(Work.id == work_id).first()
     field = query.field
     status = session.query(MiniStatus).filter(MiniStatus.id == work.statusId).first()
@@ -67,7 +67,7 @@ async def update_work(work_id: int, work:UpdateWorkSchema):
     session.add(query)
     session.commit()
 
-    return query
+    return {**query.__dict__}
 
 @router.get("/field/{field_id}")
 async def get_field_for_organization(field_id: int):
