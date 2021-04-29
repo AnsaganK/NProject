@@ -32,6 +32,9 @@ async def edit_multiple_cells(order_id: int, cells: EditCellsArray):
         if cell and status and miniStatus:
             zero += 1
             cellsList.append(i)
+            print(zero)
+            print(cellsList)
+            print(i)
             OrderCellsStatus(orderCells=cell, status=status, miniStatus=miniStatus, date=int(time.time())*1000)
     return cellsList
 
