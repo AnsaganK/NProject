@@ -18,7 +18,7 @@ async def create_user(userSchema: userForRolesSchema):
         if i.email == userSchema.email:
             return {"error": "A user with this email already been created"}
     user = User(firstName=userSchema.firstName, lastName=userSchema.lastName, password=userSchema.password, email=userSchema.email)
-    for i in userSchema.role:
+    for i in userSchema.roles:
         role = session.query(Role).filter(Role.id == i).first()
         if role:
             user.roles.append(role)
