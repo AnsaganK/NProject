@@ -71,7 +71,9 @@ async def update_work(work_id: int, work: UpdateWorkSchema):
                 return {"error": "У этой организации нет такого сотрудника"}
     session.add(query)
     session.commit()
-    query = session.query(Work).filter(Work.id == work_id).first()
+    query = session.query(Work).options(selectinload(Work.users)).options(selectinload(Work.cars)).options(
+        selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
+        selectinload(Work.status)).filter(Work.id == work_id).first()
     return query
 
 @router.get("/field/{field_id}")
