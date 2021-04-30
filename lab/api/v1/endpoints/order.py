@@ -34,7 +34,29 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
             if status and miniStatus:
                 orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(
                 OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
-                return orderCells
+                orderCellsList = [i.cell.id for i in orderCells]
+                orders = session.query(Order).filter(Order.cells.any(Cells.id.in_(orderCellsList))).all()
+                print(orders)
+                ordersList = [i.id for i in orders]
+                orderGroups = session.query(OrderGroup).filter(OrderGroup.orders.any(Order.id.in_(ordersList)))
+                data = []
+                for i in orderGroups:
+                    group = {
+                        "orderGroupName": i.name,
+                        "orders":[]
+                    }
+                    z = 0
+                    for j in orders:
+                        order = {
+                            "orderName": j.name,
+                            "cells":[]
+                        }
+                        for k in orderCells:
+                            if k.orderId == j.id:
+                                order["cells"].append(k)
+                        group["orders"].append(order)
+                    data.append(group)
+                return data
             else:
                 return None
     return {"error": "У вас нет такой роли"}
