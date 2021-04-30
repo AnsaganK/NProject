@@ -50,7 +50,7 @@ async def update_status(mini_status_id: int, mini_status: MiniStatusSchema):
     return {"error": "Not Found"}
 
 
-@router.delete("/{status_id}")
+@router.delete("/{mini_status_id}")
 async def delete_order(mini_status_id: int):
     query = session.query(MiniStatus).filter(MiniStatus.id == mini_status_id).first()
     if query:
