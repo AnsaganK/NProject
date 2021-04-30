@@ -44,12 +44,14 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
                 for i in orderGroups:
                     group = {
                         "orderGroupName": i.name,
+                        "orderGroupId": i.id,
                         "orders":[]
                     }
                     z = 0
                     for j in orders:
                         order = {
                             "orderName": j.name,
+                            "orderId": j.id,
                             "cells":[]
                         }
                         for k in orderCells:
