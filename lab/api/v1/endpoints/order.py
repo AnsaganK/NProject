@@ -36,10 +36,10 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
                 OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
                 orderCellsList = [i.cellId for i in orderCells]
                 print(orderCellsList)
-                orders = session.query(Order).filter(Order.cells.any(Cells.id.in_(orderCellsList))).all()
+                orders = session.query(Order).join(Cells).filter(Order.cells.any(Cells.id.in_(orderCellsList))).all()
                 print(orders)
                 ordersList = [i.id for i in orders]
-                orderGroups = session.query(OrderGroup).filter(OrderGroup.orders.any(Order.id.in_(ordersList)))
+                orderGroups = session.query(OrderGroup).join(Order).filter(OrderGroup.orders.any(Order.id.in_(ordersList)))
                 data = []
                 for i in orderGroups:
                     group = {
