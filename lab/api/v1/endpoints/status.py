@@ -30,13 +30,9 @@ async def create_status(status: StatusSchema):
             return {"error": "A status with this name has already been created"}
 
     role = session.query(Role).filter(Role.id == status.roleEdit).first()
-    if not role:
-        return {"error": "Не найдена роль для изменения"}
     query.role_edit = role
 
     role1 = session.query(Role).filter(Role.id == status.roleSelect).first()
-    if not role1:
-        return {"error": "Не найдена роль для отбора"}
     query.role_selection = role1
 
     session.add(query)
