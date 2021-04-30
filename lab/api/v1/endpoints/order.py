@@ -287,13 +287,14 @@ async def create_order(order: OrderSchema):
             query.elements.append(element)
 
     status = session.query(Status).filter(Status.name == "planned").first()
+    miniStatus = session.query(MiniStatus).filter(MiniStatus.name == "Готово").first()
     for i in range(1, order.cellCount + 1):
         cell = Cells(code=i)
         date = int(time.time()) * 1000
         orderCells = OrderCells(order=query, cell=cell, date=date)
         session.add(orderCells)
         if status:
-            OCS = OrderCellsStatus(orderCells=orderCells, status=status, date=int(time.time()) * 1000)
+            OCS = OrderCellsStatus(orderCells=orderCells, status=status, miniStatus=miniStatus, date=int(time.time()) * 1000)
             session.add(OCS)
     session.add(query)
     session.commit()
