@@ -34,9 +34,9 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
             if status and miniStatus:
                 orderCells = session.query(OrderCells).join(OrderCellsStatus).filter(
                 OrderCellsStatus.statusId == status.id).filter(OrderCellsStatus.miniStatusId == miniStatus.id).all()
-                cellsList = [i.cellId for i in orderCells]
+                cellsList = [i.id for i in orderCells]
                 print(cellsList)
-                orders = session.query(Order).join(Cells).filter(Order.cells.any(Cells.id.in_(cellsList))).all()
+                orders = session.query(Order).join(OrderCells).filter(Order.cells.any(OrderCells.id.in_(cellsList))).all()
                 print(orders)
                 ordersList = [i.id for i in orders]
                 orderGroups = session.query(OrderGroup).join(Order).filter(OrderGroup.orders.any(Order.id.in_(ordersList)))
