@@ -28,8 +28,8 @@ status_dict = [
 class StatusSchema(BaseModel):
     name: str
     color: Optional[str] = Field(None)
-    roleEdit: int = Field(None)
-    roleSelect: int = Field(None)
+    roleEdit: Optional[int] = Field(None)
+    roleSelect: Optional[int] = Field(None)
 
 
 class StatusIdSchema(BaseModel):
