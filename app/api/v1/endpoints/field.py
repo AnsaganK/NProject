@@ -42,7 +42,7 @@ def createShape(geometry, kadNumber):
     w.record('{}'.format(kadNumber))
     w.close()
     z = zipfile.ZipFile('media/edit_shape_zip/{}.zip'.format(kadNumber), 'w')
-    files = [f'{kadNumber}.shx', f'{kadNumber}.shp', f'{kadNumber}.dbf']
+    files = [url+'.shx', url+'.shp', url+'.dbf']
     for file in files:
         z.write(file)
     z.close()
