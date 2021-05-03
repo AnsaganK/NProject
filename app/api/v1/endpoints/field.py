@@ -7,7 +7,7 @@ import shapefile as shp
 import zipfile
 
 #from pytz import unicode
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 from app.auth.auth_bearer import JWTBearer
 from app.models.historyFields import HistoryFields
 from app.models.shape import Shape
@@ -141,10 +141,7 @@ async def download_shape(shape_id: int):
         z.write(file)
     z.close()
 
-    with open("{}.zip".format(shape.url.replace("shape", "zip")), 'rb') as f:
-        load = f.read()
-
-    return StreamingResponse(load, media_type='zip')
+    return FileResponse("{}.zip".format(shape.url.replace("shape", "zip")))
 
 @router.put("/{field_id}")
 async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JWTBearer())):
