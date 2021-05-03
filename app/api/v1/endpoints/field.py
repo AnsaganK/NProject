@@ -142,7 +142,7 @@ async def download_shape(shape_id: int):
     z.close()
 
     with open("{}.zip".format(shape.url.replace("shape", "zip")), 'rb') as f:
-        load = f.read()
+        load = f.read().decode(encoding='unicode-escape')
 
     return {"file": load}
 
