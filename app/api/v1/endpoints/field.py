@@ -34,6 +34,12 @@ async def get_fields():
     query = session.query(Field).options(selectinload(Field.organization)).options(selectinload(Field.type)).all()
     return query
 
+def createShape(geometry, kadNumber):
+    w = shp.Writer('media/edit_shape/{}'.format(kadNumber))
+    w.field('name', 'C')
+    w.poly(geometry)
+    w.record('{}'.format(kadNumber))
+    w.close()
 
 def createGeoJson(urlShape):
     s = shp.Reader(urlShape)
@@ -83,6 +89,17 @@ async def get_field(organization_id: int):
         return query
     return {"error": "Not Found"}
 
+
+@router.get("/download/{field_id}")
+async def download_field_geojson(field_id: int):
+    query = session.query(Field).filter(Field.id == field_id).first()
+    json = query.geoJson
+    kadNumber = query.kadNumber
+    createShape(json, kadNumber)
+    return FileResponse("media/edit_shape/{}".format(kadNumber))
+
+
+    
 @router.get("/{field_id}")
 async def get_field(field_id: int):
     query = session.query(Field).options(selectinload(Field.type)).options(selectinload(Field.shape)).filter(Field.id == field_id).first()
