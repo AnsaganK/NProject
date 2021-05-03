@@ -100,10 +100,10 @@ async def get_field(organization_id: int):
 async def download_field_geojson(field_id: int):
     query = session.query(Field).filter(Field.id == field_id).first()
     json = query.geoJson
-    print(json)
-    print(type(json))
     kadNumber = query.kadNumber
     createShape(json, kadNumber)
+    print(json)
+    print(type(json))
     return FileResponse("media/edit_shape_zip/{}.zip".format(kadNumber))
 
 
