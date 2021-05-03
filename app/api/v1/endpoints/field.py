@@ -134,7 +134,7 @@ async def download_shape(shape_id: int):
     shape = session.query(Shape).filter(Shape.id == shape_id).first()
     files = [shape.url+".shp", shape.url+".dbf"]
     print(files)
-    z = zipfile.ZipFile("{}.zip".format(shape.url.replace("shape", "zip")), 'w', encoding="utf-8")
+    z = zipfile.ZipFile("{}.zip".format(shape.url.replace("shape", "zip")), 'w')
     for file in files:
         z.write(file)
     z.close()
