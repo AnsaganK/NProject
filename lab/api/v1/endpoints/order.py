@@ -262,9 +262,13 @@ async def update_order(order_id: int, order: OrderSchema):
     session.add(query)
     session.commit()
 
-    return {"id": query.id, "name": query.name, "date": query.date, "cellCount": query.cellCount,
-            "organization": query.organization,
-            "grid": query.grid, "elements": query.elements, "way": query.way}
+    query = session.query(Order).filter(Order.id == query.id).first()
+
+    return query
+
+    #return {"id": query.id, "name": query.name, "date": query.date, "cellCount": query.cellCount,
+    #        "organization": query.organization,
+    #        "grid": query.grid, "elements": query.elements, "way": query.way}
 
 
 @router.post("")
