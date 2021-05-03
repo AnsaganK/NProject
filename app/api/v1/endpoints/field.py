@@ -35,11 +35,17 @@ async def get_fields():
     return query
 
 def createShape(geometry, kadNumber):
-    w = shp.Writer('media/edit_shape/{}'.format(kadNumber))
+    url = 'media/edit_shape/{}'.format(kadNumber)
+    w = shp.Writer(url)
     w.field('name', 'C')
     w.poly(geometry)
     w.record('{}'.format(kadNumber))
     w.close()
+    z = zipfile.ZipFile('media/edit_shape_zip/{}.zip'.format(kadNumber), 'w')
+    files = [url+'.shx', url+'.shp', url+'.dbf']
+    for file in files:
+        z.write(file)
+    z.close()
 
 def createGeoJson(urlShape):
     s = shp.Reader(urlShape)
@@ -96,7 +102,7 @@ async def download_field_geojson(field_id: int):
     json = query.geoJson
     kadNumber = query.kadNumber
     createShape(json, kadNumber)
-    return FileResponse("media/edit_shape/{}".format(kadNumber))
+    return FileResponse("media/edit_shape_zip/{}.zip".format(kadNumber))
 
 
     
