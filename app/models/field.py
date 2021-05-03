@@ -23,11 +23,13 @@ class Field(Base):
     organization = relationship('Organization', backref="fields") #lazy='subquery')
     kadNumber = Column(String, unique=True)
     urlShpFile = Column(String)
+    shapeId = Column(Integer, ForeignKey('shapes.id'))
+    shape = relationship('Shape', backref="field", foreign_keys=[shapeId])
     districtId = Column(String)
     area = Column(JSON)
     length = Column(Float)
     typeId = Column(Integer, ForeignKey('TypesForField.id'))
-    type = relationship('TypesForField', backref='field')
+    type = relationship('TypesForField', backref='field', foreign_keys=[typeId])
     geoJson = Column(JSON)
 
     def __repr__(self):

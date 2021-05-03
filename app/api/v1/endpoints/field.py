@@ -1,11 +1,17 @@
+import json
+from typing import List
+
 from fastapi.params import Depends
+import shutil
+import shapefile as shp
 
 from app.auth.auth_bearer import JWTBearer
 from app.models.historyFields import HistoryFields
+from app.models.shape import Shape
 from app.models.user import User
 from app.views.auth.auth_bearer import decodeJWT
 from db import session
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
 from app.models.field import Field
 from app.models.typesForField import TypesForField
 from app.schemas.field import FieldSchema
@@ -18,7 +24,6 @@ from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 
-
 @router.get("")
 async def get_fields():
     #query = session.query(Field, Organization.id).join(Field.organization).all()
@@ -26,7 +31,40 @@ async def get_fields():
     query = session.query(Field).options(selectinload(Field.organization)).options(selectinload(Field.type)).all()
     return query
 
-#@router.get()
+
+def createGeoJson(urlShape):
+    s = shp.Reader(urlShape)
+    fields = s.fields[1:]
+    field_names = [field[0] for field in fields]
+    buffer = []
+    for sr in s.shapeRecords():
+        atr = dict(zip(field_names, sr.record))
+        geom = sr.shape.__geo_interface__
+        buffer.append(dict(type="Feature",
+                            geometry=geom, properties=atr))
+
+        # write the GeoJSON file
+    return {"type": "FeatureCollection", "features": buffer}
+
+
+
+@router.post("/shape_to_geojson")
+async def shape_to_geojson(shape: List[UploadFile] = File(...)):
+    now = time.time()*1000
+    url = "media/shape/{0}".format(str(int(now)))
+    for i in shape:
+        urlShape = "media/shape/{0}.{1}".format(str(int(now)), i.filename[-3:])
+        with open(urlShape, "wb") as f:
+            shutil.copyfileobj(i.file, f)
+    geoJson = createGeoJson(url)
+    query = Shape(date=int(now), geoJson=geoJson, url=url)
+    session.add(query)
+    session.commit()
+
+    last_query = session.query(Shape).filter(Shape.id == query.id).first()
+    return last_query
+
+
 
 @router.get("/history/{field_id}")
 async def get_history_for_field(field_id: int):
@@ -44,7 +82,7 @@ async def get_field(organization_id: int):
 
 @router.get("/{field_id}")
 async def get_field(field_id: int):
-    query = session.query(Field).options(selectinload(Field.type)).filter(Field.id == field_id).first()
+    query = session.query(Field).options(selectinload(Field.type)).options(selectinload(Field.shape)).filter(Field.id == field_id).first()
     print(query.__dict__)
     if query:
         a = query.organization
@@ -57,7 +95,7 @@ async def get_field(field_id: int):
 async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
     user = decodeJWT(token)
     user = session.query(User).filter(User.id == user["id"]).first()
-    print("userId: ", user)
+    #print("userId: ", user)
     query = Field(name=field.name, kadNumber=field.kadNumber,
                   urlShpFile=field.urlShpFile,
                   districtId=field.districtId,
@@ -66,6 +104,7 @@ async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
 
     organization = session.query(Organization).filter(Organization.id == field.organizationId).first()
     type = session.query(TypesForField).filter(TypesForField.id == field.typeId).first()
+    shape = session.query(Shape).filter(Shape.id == field.shapeId).first()
     if not organization:
         return {"error": "Not Found Organization"}
     if not type:
@@ -74,9 +113,10 @@ async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
         if i.kadNumber == field.kadNumber:
             return {"error": "A field with this kad.number has already been created"}
 
-
     query.organization = organization
     query.type = type
+    if shape:
+        query.shape = shape
     history = HistoryFields(field=query, user=user, date=int(time.time()), action="Создано", geoJson=field.geoJson)
     session.add(query)
     session.add(history)

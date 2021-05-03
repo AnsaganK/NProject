@@ -3,7 +3,7 @@ from app.auth.auth_bearer import JWTBearer
 
 from lab.api.v1.endpoints import elements, order, status, mini_status, cells, color, elementTypes, mobile
 from app.api.v1.endpoints import organization, user, field, typesForField, role, login, season, culture, \
-    fieldCultureSeason, irrigationType, tillage, workType, workSubType, work, cars
+    fieldCultureSeason, irrigationType, tillage, workType, workSubType, work, cars, shape
 
 api_router = APIRouter()
 
@@ -25,6 +25,7 @@ api_router.include_router(organization.router, tags=["Организации"],
                           prefix="/organizations")  # dependencies=[Depends(JWTBearer())])
 api_router.include_router(user.router, tags=["Пользователи"], prefix="/users")
 api_router.include_router(field.router, tags=["Поля"], prefix="/fields")  # dependencies=[Depends(JWTBearer())])
+api_router.include_router(shape.router, tags=["Shape файлы"], prefix="/shapes")  # dependencies=[Depends(JWTBearer())])
 api_router.include_router(typesForField.router, tags=["Типы полей"],
                           prefix="/field_types")  # dependencies=[Depends(JWTBearer())])
 api_router.include_router(order.router, tags=["Заказы"], prefix="/orders")  # dependencies=[Depends(JWTBearer())])

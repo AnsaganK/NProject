@@ -8,6 +8,7 @@ class FieldSchema(BaseModel):
     kadNumber: str
     organizationId: int
     urlShpFile: Optional[str] = Field(None)
+    shapeId: Optional[int] = Field(None)
     districtId: Optional[str] = Field(None)
     typeId: Optional[int] = Field(None)
     area: dict
