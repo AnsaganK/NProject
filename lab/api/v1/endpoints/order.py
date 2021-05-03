@@ -241,7 +241,7 @@ async def update_order(order_id: int, order: OrderSchema):
 
     orderGroup = session.query(OrderGroup).filter(OrderGroup.id == order.orderGroupId).first()
     query.group = orderGroup
-
+    user = orderGroup.user
     query.elements = []
     if order.date:
         query.date = order.date
@@ -264,7 +264,7 @@ async def update_order(order_id: int, order: OrderSchema):
 
     query = session.query(Order).filter(Order.id == query.id).first()
 
-    return query
+    return {**query.__dict__, "user": user}
 
     #return {"id": query.id, "name": query.name, "date": query.date, "cellCount": query.cellCount,
     #        "organization": query.organization,
