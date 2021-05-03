@@ -42,7 +42,7 @@ def createShape(geometry, kadNumber):
     w.record('{}'.format(kadNumber))
     w.close()
     z = zipfile.ZipFile('media/edit_shape_zip/{}.zip'.format(kadNumber), 'w')
-    files = [url+'.shx', url+'.shp', url+'.dbf']
+    files = [f'{kadNumber}.shx', f'{kadNumber}.shp', f'{kadNumber}.dbf']
     for file in files:
         z.write(file)
     z.close()
@@ -102,8 +102,6 @@ async def download_field_geojson(field_id: int):
     json = query.geoJson
     kadNumber = query.kadNumber
     createShape(json["geometry"]["coordinates"], kadNumber)
-    print(json)
-    print(type(json))
     return FileResponse("media/edit_shape_zip/{}.zip".format(kadNumber))
 
 
