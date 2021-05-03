@@ -144,7 +144,7 @@ async def download_shape(shape_id: int):
     with open("{}.zip".format(shape.url.replace("shape", "zip")), 'rb') as f:
         load = f.read()
 
-    return StreamingResponse(load)
+    return StreamingResponse(load, media_type='zip')
 
 @router.put("/{field_id}")
 async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JWTBearer())):
