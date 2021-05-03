@@ -135,13 +135,13 @@ async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
 async def download_shape(shape_id: int):
     shape = session.query(Shape).filter(Shape.id == shape_id).first()
     files = [shape.url+".shp", shape.url+".dbf"]
-    print(files)
+    #print(files)
     z = zipfile.ZipFile("{}.zip".format(shape.url.replace("shape", "zip")), 'w')
     for file in files:
         z.write(file)
     z.close()
-
-    return FileResponse("{}.zip".format(shape.url.replace("shape", "zip")))
+    file_name = "{}.zip".format(shape.url.replace("shape", "zip"))
+    return FileResponse(file_name)
 
 @router.put("/{field_id}")
 async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JWTBearer())):
