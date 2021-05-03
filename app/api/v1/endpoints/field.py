@@ -4,6 +4,7 @@ from typing import List
 from fastapi.params import Depends
 import shutil
 import shapefile as shp
+import zipfile
 
 from app.auth.auth_bearer import JWTBearer
 from app.models.historyFields import HistoryFields
@@ -127,6 +128,21 @@ async def create_field(field: FieldSchema, token: str = Depends(JWTBearer())):
 
     return {**organization, "id": last_id}
 
+
+@router.get("/shapes/{shape_id}")
+async def download_shape(shape_id: int):
+    shape = session.query(Shape).filter(Shape.id == shape_id).first()
+    files = [shape.url+".shp", shape.url+".dbf"]
+    print(files)
+    z = zipfile.ZipFile("zip/{}.zip".format(shape.url), 'w')
+    for file in files:
+        z.write(file)
+    z.close()
+
+    with open("zip/{}.zip".format(shape.url), 'r') as f:
+        load = f.read()
+
+    return {"file": load}
 
 @router.put("/{field_id}")
 async def update_field(field_id:int, field: FieldSchema, token: str = Depends(JWTBearer())):
