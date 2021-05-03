@@ -84,7 +84,7 @@ async def get_field(organization_id: int):
 @router.get("/{field_id}")
 async def get_field(field_id: int):
     query = session.query(Field).options(selectinload(Field.type)).options(selectinload(Field.shape)).filter(Field.id == field_id).first()
-    print(query.__dict__)
+    #print(query.__dict__)
     if query:
         a = query.organization
         return query.__dict__
