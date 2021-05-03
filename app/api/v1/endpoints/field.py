@@ -6,6 +6,8 @@ import shutil
 import shapefile as shp
 import zipfile
 
+from pytz import unicode
+
 from app.auth.auth_bearer import JWTBearer
 from app.models.historyFields import HistoryFields
 from app.models.shape import Shape
@@ -140,7 +142,7 @@ async def download_shape(shape_id: int):
     z.close()
 
     with open("{}.zip".format(shape.url.replace("shape", "zip")), 'r', encoding="utf-8") as f:
-        load = f.read()
+        load = f.read().decode(encoding='unicode-escape')
 
     return {"file": load}
 
