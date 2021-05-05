@@ -23,6 +23,14 @@ async def get_works():
     query = session.query(Work).options(selectinload(Work.field)).all()
     return query
 
+@router.get("employee/{employee_id}")
+async def get_works_for_employee(employee_id:int):
+    employee = session.query(User).filter(employee_id).first()
+    if not employee:
+        return {"error": "пользователь не найден"}
+    works = employee.works
+    return works
+
 
 @router.put("/{work_id}")
 async def update_work(work_id: int, work: UpdateWorkSchema):
