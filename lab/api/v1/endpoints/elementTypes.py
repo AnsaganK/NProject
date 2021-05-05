@@ -15,7 +15,7 @@ async def get_all_element_types():
     return query
 
 
-@router.post("/create_element_type")
+@router.post("")
 async def create_element_type(type: ElementTypeSchema):
     query = Type(name=type.name, gost=type.gost, description=type.description)
 
