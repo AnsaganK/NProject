@@ -25,7 +25,7 @@ async def get_works():
 
 @router.get("/employee/{employee_id}")
 async def get_works_for_employee(employee_id:int):
-    employee = session.query(User).filter(employee_id).first()
+    employee = session.query(User).filter(User.id == employee_id).first()
     if not employee:
         return {"error": "пользователь не найден"}
     works = employee.works
