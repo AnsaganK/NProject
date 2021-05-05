@@ -44,7 +44,7 @@ class ElementsSchema(BaseModel):
     code: str
     date: Optional[int] = Field(None)
     standard: bool = Field(default=False)
-    ranges: List[RangeListSchema]
+    ranges: List[RangeSchema]
 
     class Config:
         orm_mode = True
