@@ -40,7 +40,7 @@ async def create_element_type(type: ElementTypeSchema):
 @router.post("/add_element/{type_id}")
 async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     query = session.query(Type).filter(Type.id == type_id).first()
-    for i in elements:
+    for i in elements.elements:
         print(i)
         element = Elements(name=i.name, code=i.code, standard=i.standard, date=i.date)
         if not i.date:
@@ -56,9 +56,9 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                 rangeColor = RangeColor(range=range, color=color)
                 elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
                 session.add(elementColor)
-        for k in i.rangeErrors:
+        for k in i.errorRanges:
             rangeError = ErrorRange(of=k.of, to=k.to, value=k.value)
-            elementErrorRange = ElementErrorRange(errorRange=rangeError, element=element)
+            elementErrorRange = ElementErrorRange(errorRange=rangeError, elementType=elementType)
             session.add(elementErrorRange)
     session.add(query)
     session.commit()
