@@ -37,7 +37,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
         if not i.date:
             element.date = int(time.time())
         elementType = ElementType(element=element, type=query)
-        for j in i.ranges:
+        for j in i.range:
             range_name = j.name
             range_of = j.of
             range_to = j.to
