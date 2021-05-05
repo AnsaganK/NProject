@@ -41,6 +41,7 @@ async def create_element_type(type: ElementTypeSchema):
 async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     query = session.query(Type).filter(Type.id == type_id).first()
     for i in elements:
+        print(i)
         element = Elements(name=i.name, code=i.code, standard=i.standard, date=i.date)
         if not i.date:
             element.date = int(time.time())
