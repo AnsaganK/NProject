@@ -29,7 +29,7 @@ async def get_works_for_employee(employee_id:int):
     if not employee:
         return {"error": "пользователь не найден"}
     #works = employee.works
-    works = session.query(Work).filter(Work.users.in_(employee)).all()
+    works = session.query(Work).join(User).filter(employee.in_(Work.users)).all()
     return works
 
 
@@ -84,6 +84,7 @@ async def update_work(work_id: int, work: UpdateWorkSchema):
         selectinload(Work.workType)).options(selectinload(Work.workSubType)).options(
         selectinload(Work.status)).filter(Work.id == work_id).first()
     return query
+
 
 @router.get("/field/{field_id}")
 async def get_field_for_organization(field_id: int):
