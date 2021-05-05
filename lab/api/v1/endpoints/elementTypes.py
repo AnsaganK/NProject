@@ -19,7 +19,7 @@ async def get_all_element_types():
 
 @router.get("/{type_id}")
 async def get_all_element_types(type_id: int):
-    query = session.query(Type).options(selectinload(Type.element)).filter(Type.id == type_id).first()
+    query = session.query(Type).options(selectinload(Type.elements)).filter(Type.id == type_id).first()
     return query
 
 
