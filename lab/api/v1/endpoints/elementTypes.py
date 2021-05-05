@@ -64,7 +64,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     session.commit()
 
     last_id = query.id
-    query = session.query(Type).filter(Type.id == last_id).first()
+    query = session.query(Type).options(selectinload(Type.elements)).filter(Type.id == last_id).first()
     return query
 
 
