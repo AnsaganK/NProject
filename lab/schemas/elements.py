@@ -38,6 +38,10 @@ class ElementTypeSchema(BaseModel):
     description: str
 
 
+class errorRange(BaseModel):
+    of: float
+    to: float
+    value: float
 
 class ElementsSchema(BaseModel):
     name: str
@@ -45,7 +49,7 @@ class ElementsSchema(BaseModel):
     date: Optional[int] = Field(None)
     standard: bool = Field(default=False)
     ranges: List[RangeSchema]
-
+    errorRanges: List[errorRange]
     class Config:
         orm_mode = True
 
