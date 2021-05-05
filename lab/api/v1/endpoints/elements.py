@@ -3,7 +3,7 @@ from sqlalchemy.orm import selectinload
 from db import session
 from fastapi import APIRouter, Query
 from lab.models.elements import Elements, Type, ElementType, Range, Color, RangeColor, ElementColor
-from lab.schemas.elements import ElementsSchema
+from lab.schemas.elements import ElementsSchema, ElementTypeSchema
 import time
 
 router = APIRouter()
@@ -56,35 +56,7 @@ async def get_element(element_id: int):
         return {"error": "Элемент не найден"}
 
 
-@router.post("/create_element_type")
-async def create_element_type(element: ElementsSchema):
-    query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
-    if not query.date:
-        query.date = int(time.time())
-    for i in session.query(Elements).all():
-        if i.name == element.name:
-            return {"error": "A element with this name has already been created"}
 
-    for i in element.types:
-        type = Type(name=i.name)
-        elementType = ElementType(type=type, element=query)
-        for j in i.range:
-            range_name = j.name
-            range_of = j.of
-            range_to = j.to
-            range = Range(name=range_name, of=range_of, to=range_to)
-            color = session.query(Color).filter(Color.id == j.color).first()
-            if color:
-                rangeColor = RangeColor(range=range, color=color)
-                elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
-                session.add(elementColor)
-    session.add(query)
-    session.commit()
-
-    last_id = query.id
-    organization = element.dict()
-
-    return {**organization, "id": last_id}
 
 
 @router.put("/{element_id}")
