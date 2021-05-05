@@ -18,7 +18,7 @@ api_router.include_router(irrigationType.router, tags=["Тип орошения"
 api_router.include_router(tillage.router, tags=["Обработка почвы"], prefix="/tillages")
 api_router.include_router(fieldCultureSeason.router, tags=["Севооборот"], prefix="/crop_rotation")
 api_router.include_router(elementTypes.router, tags=["Типы элементов"],
-                          prefix="/elementTypes")  # dependencies=[Depends(JWTBearer())])
+                          prefix="/element_types")  # dependencies=[Depends(JWTBearer())])
 api_router.include_router(elements.router, tags=["Элементы"],
                           prefix="/elements")  # dependencies=[Depends(JWTBearer())])
 api_router.include_router(organization.router, tags=["Организации"],
