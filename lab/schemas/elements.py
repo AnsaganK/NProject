@@ -23,6 +23,9 @@ class RangeSchema(BaseModel):
     to: float
     color: int
 
+class RangeListSchema(BaseModel):
+    name: str
+    range: List[RangeSchema]
 
 class TypeSchema(BaseModel):
     name: str
@@ -41,7 +44,7 @@ class ElementsSchema(BaseModel):
     code: str
     date: Optional[int] = Field(None)
     standard: bool = Field(default=False)
-    types: List[TypeSchema]
+    ranges: List[RangeListSchema]
 
     class Config:
         orm_mode = True
