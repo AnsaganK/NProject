@@ -32,6 +32,7 @@ class TypeSchema(BaseModel):
 class ElementTypeSchema(BaseModel):
     name: str
     gost: str
+    description: str
 
 class ElementsSchema(BaseModel):
     name: str
