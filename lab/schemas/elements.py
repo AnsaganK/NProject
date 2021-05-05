@@ -34,6 +34,8 @@ class ElementTypeSchema(BaseModel):
     gost: str
     description: str
 
+
+
 class ElementsSchema(BaseModel):
     name: str
     code: str
@@ -43,3 +45,7 @@ class ElementsSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ElementForTypeSchema(BaseModel):
+    elements: List[ElementsSchema]

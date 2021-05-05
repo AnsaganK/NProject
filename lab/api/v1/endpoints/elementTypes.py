@@ -26,6 +26,19 @@ async def create_element_type(type: ElementTypeSchema):
     query = session.query(Type).filter(Type.id == last_id).first()
     return query
 
+
+@router.post("/add_element/{type_id}")
+async def create_element_type(type_id: int, ):
+    query = session.query(Type).filter(Type.id == type_id).first()
+
+    session.add(query)
+    session.commit()
+
+    last_id = query.id
+    query = session.query(Type).filter(Type.id == last_id).first()
+    return query
+
+
 #@router.post("")
 #async def create_element_types(type: elementTypeSchema):
 #    query = Type(name= type.name)
