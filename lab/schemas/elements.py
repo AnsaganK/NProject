@@ -43,11 +43,9 @@ class errorRange(BaseModel):
     to: float
     value: float
 
+
 class ElementsSchema(BaseModel):
-    name: str
-    code: str
-    date: Optional[int] = Field(None)
-    standard: bool = Field(default=False)
+    elementId: int
     ranges: List[RangeSchema]
     errorRanges: Optional[List[errorRange]] = Field(None)
     class Config:

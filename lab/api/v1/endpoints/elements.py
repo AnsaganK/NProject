@@ -55,7 +55,7 @@ async def get_element(element_id: int):
     else:
         return {"error": "Элемент не найден"}
 
-
+'''
 @router.post("")
 async def create_element(element: ElementsSchema):
     query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
@@ -85,7 +85,7 @@ async def create_element(element: ElementsSchema):
     organization = element.dict()
 
     return {**organization, "id": last_id}
-
+'''
 
 @router.put("/{element_id}")
 async def update_element(element_id: int, element: ElementsSchema):
