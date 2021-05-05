@@ -29,6 +29,10 @@ class TypeSchema(BaseModel):
     range: List[RangeSchema]
 
 
+class ElementTypeSchema(BaseModel):
+    name: str
+    gost: str
+
 class ElementsSchema(BaseModel):
     name: str
     code: str

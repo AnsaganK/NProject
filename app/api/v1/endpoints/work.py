@@ -23,6 +23,8 @@ async def get_works():
     query = session.query(Work).options(selectinload(Work.field)).all()
     return query
 
+
+'''      Тут точно есть ошибка рекурсии         '''
 @router.get("/employee/{employee_id}")
 async def get_works_for_employee(employee_id:int):
     employee = session.query(User).filter(User.id == employee_id).first()
