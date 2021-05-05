@@ -49,7 +49,7 @@ class ElementsSchema(BaseModel):
     date: Optional[int] = Field(None)
     standard: bool = Field(default=False)
     ranges: List[RangeSchema]
-    errorRanges: List[errorRange]
+    errorRanges: Optional[List[errorRange]] = Field(None)
     class Config:
         orm_mode = True
 
