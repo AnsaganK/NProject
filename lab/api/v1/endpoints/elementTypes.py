@@ -17,6 +17,13 @@ async def get_all_element_types():
     return query
 
 
+@router.get("/{type_id}")
+async def get_all_element_types(type_id: int):
+    query = session.query(Type).options(selectinload(Type.element)).filter(Type.id == type_id).first()
+    return query
+
+
+
 @router.post("")
 async def create_element_type(type: ElementTypeSchema):
     query = Type(name=type.name, gost=type.gost, description=type.description)
