@@ -21,12 +21,38 @@ class ElementType(Base):
 
     id = Column(Integer, primary_key=True)
     typeId = Column(Integer, ForeignKey('types.id'))
-    type = relationship("Type", cascade="all,delete", backref="element")
+    type = relationship("Type", cascade="all,delete", backref="elements")
     elementId = Column(Integer, ForeignKey('elements.id'))
     element = relationship("Elements",  backref="types")
 
     def __repr__(self):
         return "<ElementType ({})>".format(self.id)
+
+
+class ElementErrorRange(Base):
+    __tablename__ = "ElementErrorRange"
+
+    id = Column(Integer, primary_key=True)
+    errorRangeId = Column(Integer, ForeignKey("errorRanges.id"))
+    errorRange = relationship("ErrorRange", backref="errorRanges")
+
+    elementTypeId = Column(Integer, ForeignKey("ElementType.id"))
+    elementType = relationship("ElementType", backref="element_types")
+
+    def __repr__(self):
+        return "<ElementErrorRange ({})>".format(self.id)
+
+
+class ErrorRange(Base):
+    __tablename__ = "errorRanges"
+
+    id = Column(Integer, primary_key=True)
+    value = Column(String)
+    of = Column(Float)
+    to = Column(Float)
+
+    def __repr__(self):
+        return self.name
 
 class Range(Base):
     __tablename__ = "range"
