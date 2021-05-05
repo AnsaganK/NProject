@@ -28,7 +28,8 @@ async def get_works_for_employee(employee_id:int):
     employee = session.query(User).filter(User.id == employee_id).first()
     if not employee:
         return {"error": "пользователь не найден"}
-    works = employee.works
+    #works = employee.works
+    works = session.query(Work).filter(Work.users.in_(employee_id)).all()
     return works
 
 
