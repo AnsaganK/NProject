@@ -2,7 +2,8 @@ import time
 
 from db import session
 from fastapi import APIRouter
-from lab.models.elements import ElementType, Type, Elements, Color, Range, RangeColor, ElementColor
+from lab.models.elements import ElementType, Type, Elements, Color, Range, RangeColor, ElementColor, ErrorRange, \
+    ElementErrorRange
 from sqlalchemy.orm import selectinload
 
 from lab.schemas.elementTypes import elementTypeSchema
@@ -55,7 +56,9 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                 elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
                 session.add(elementColor)
         for k in i.rangeErrors:
-            rangeError
+            rangeError = ErrorRange(of=k.of, to=k.to, value=k.value)
+            elementErrorRange = ElementErrorRange(errorRange=rangeError, element=element)
+            session.add(elementErrorRange)
     session.add(query)
     session.commit()
 
