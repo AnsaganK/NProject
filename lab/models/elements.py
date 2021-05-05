@@ -34,7 +34,7 @@ class ElementErrorRange(Base):
 
     id = Column(Integer, primary_key=True)
     errorRangeId = Column(Integer, ForeignKey("errorRanges.id"))
-    errorRange = relationship("ErrorRange", backref="errorRanges")
+    errorRange = relationship("ErrorRange", backref="error_ranges")
 
     elementTypeId = Column(Integer, ForeignKey("ElementType.id"))
     elementType = relationship("ElementType", backref="element_types")
