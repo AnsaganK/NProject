@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.get("")
 async def get_all_element_types():
-    query = session.query(Type).options(selectinload(Type.element)).all()
+    query = session.query(Type).options(selectinload(Type.elements)).all()
     return query
 
 
@@ -54,6 +54,8 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                 rangeColor = RangeColor(range=range, color=color)
                 elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
                 session.add(elementColor)
+        for k in i.rangeErrors:
+            rangeError
     session.add(query)
     session.commit()
 
