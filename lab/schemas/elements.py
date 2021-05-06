@@ -46,7 +46,7 @@ class errorRange(BaseModel):
 
 class ElementsSchema(BaseModel):
     elementId: int
-    ranges: List[RangeSchema]
+    colorRanges: List[RangeSchema]
     errorRanges: Optional[List[errorRange]] = Field(None)
     class Config:
         orm_mode = True
