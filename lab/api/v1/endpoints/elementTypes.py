@@ -17,14 +17,26 @@ async def get_all_element_types():
     query = session.query(Type).options(selectinload(Type.elements)).all()
     return query
 
-def wrap_element_type():
-    pass
+def wrap_element_type(data):
+    dic = {**data.__dict__}
+    elements = []
+    for i in data.elements:
+        errorRange = session.query(ElementErrorRange).filter(ElementErrorRange.elementTypeId == i.id).first()
+        element = session.query(Elements).filter(Elements.id == i.elementId).first()
+        elements.append({
+            "errorRange": errorRange,
+            "element": element,
+        })
+    dic["elements"] = elements
+    return dic
+
 
 @router.get("/{type_id}")
 async def get_all_element_types(type_id: int):
     query = session.query(Type).options(selectinload(Type.elements)).filter(Type.id == type_id).first()
-    return query
-
+    if query:
+        return wrap_element_type(query)
+    return {"error": "Тип не найден"}
 
 
 @router.post("")
