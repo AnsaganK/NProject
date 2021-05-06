@@ -287,9 +287,9 @@ async def create_order(order: OrderSchema):
     orderQuery = session.query(OrderGroup).filter(OrderGroup.id == order.orderGroupId).first()
     if orderQuery:
         for j in session.query(Order).join(OrderGroup).filter(OrderGroup.id == orderQuery.id).all():
-            print(j)
+            #print(j)
             for k in session.query(Field).join(Order).filter(Order.id == j.id).all():
-                print(k)
+                #print(k)
                 if field.id == k.id:
                     return {"error": "В данном заказе уже есть такое поле"}
         query.group = orderQuery
