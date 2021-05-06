@@ -68,7 +68,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
         print(i)
         element = session.query(Elements).filter(Elements.id == i.elementId).first()
         elementType = ElementType(element=element, type=query)
-        for j in i.ranges:
+        for j in i.colorRanges:
             range_name = j.name
             range_of = j.of
             range_to = j.to
