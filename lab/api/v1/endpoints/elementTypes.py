@@ -63,6 +63,9 @@ async def create_element_type(type: ElementTypeSchema):
 @router.post("/add_element/{type_id}")
 async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     query = session.query(Type).filter(Type.id == type_id).first()
+    query.name = elements.name
+    query.description = elements.description
+    query.gost = elements.gost
     query.elements = []
     for i in elements.elements:
         print(i)

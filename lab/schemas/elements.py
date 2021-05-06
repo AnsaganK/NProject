@@ -53,4 +53,7 @@ class ElementsSchema(BaseModel):
 
 
 class ElementForTypeSchema(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+    gost: Optional[str]
     elements: List[ElementsSchema]
