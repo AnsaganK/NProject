@@ -61,7 +61,7 @@ async def get_cells_for_order(order_id: int):
                 el = c.element
                 elType = elementTypes.filter(ElementType.elementId == el.id).first()
                 print(elType)
-                errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.c.elementTypeId == elType.id).all()
+                errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == elType.id).all()
                 errorNumber = 0
                 for i in errorRanges:
                     if c.result>i.of and c.result<i.to:
