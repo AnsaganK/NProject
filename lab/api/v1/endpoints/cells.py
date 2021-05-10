@@ -59,8 +59,6 @@ async def get_cells_for_order(order_id: int):
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
-                types = el.types.element_types
-                print(types)
                 cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
         if cellDic not in dic:
             dic.append(cellDic)
