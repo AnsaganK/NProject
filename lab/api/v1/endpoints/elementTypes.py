@@ -20,8 +20,8 @@ async def get_all_element_types():
 def wrap_element_type(data):
     dic = {**data.__dict__}
     elements = []
-    colorRangesList = []
     for i in data.elements:
+        colorRangesList = []
         errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == i.id).all()
         colorRanges = session.query(RangeColor).join(ElementColor).filter(ElementColor.elementTypeId == i.id).all()
 
