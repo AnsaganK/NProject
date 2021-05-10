@@ -15,13 +15,22 @@ router = APIRouter()
 @router.get("")
 async def get_all_element_types():
     query = session.query(Type).options(selectinload(Type.elements)).all()
+    response = []
     for i in query:
+        dic = {}
+        dic["name"] = i.name
+        dic["description"] = i.description
+        dic["gost"] = i.gost
+        dic["id"] = i.id
+        dic["elements"] = []
         for j in i.elements:
             elementName = j.element.name
             elementCode = j.element.code
-            j["elementName"] = elementName
-            j["elementCode"] = elementCode
-    return query
+            dic["elements"].append({"elementName": elementName,
+                                    "elementCode": elementCode
+                                    })
+        response.append(dic)
+    return response
 
 def wrap_element_type(data):
     dic = {**data.__dict__}
