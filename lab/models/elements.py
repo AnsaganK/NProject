@@ -3,6 +3,9 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, BigInteger, F
 from sqlalchemy.orm import relationship
 import datetime
 
+from lab.models.order import OrderElementsType, OrderGroupElementsType
+
+
 class Type(Base):
     __tablename__ = "types"
 
@@ -24,6 +27,9 @@ class ElementType(Base):
     type = relationship("Type", cascade="all,delete", backref="elements")
     elementId = Column(Integer, ForeignKey('elements.id'))
     element = relationship("Elements",  backref="types")
+
+    orderGroups = relationship("OrderGroup", secondary=OrderGroupElementsType, back_populates="elementTypes")
+    orders = relationship("Order", secondary=OrderElementsType, back_populates="elementTypes")
 
     def __repr__(self):
         return "<ElementType ({})>".format(self.id)

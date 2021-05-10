@@ -1,3 +1,4 @@
+from app.models.user import User
 from config import Base
 from sqlalchemy import Column, Integer, String, DateTime, BigInteger, Boolean, Table, JSON, Float
 from sqlalchemy.orm import relationship
@@ -18,6 +19,22 @@ OrderElements = Table(
     Column('orderId', Integer, ForeignKey('orders.id')),
     Column('elementId', Integer, ForeignKey('elements.id'))
 )
+
+
+OrderGroupElementsType = Table(
+    'OrderGroupElementsType',
+    Base.metadata,
+    Column('orderGroupId', Integer, ForeignKey('OrderGroup.id')),
+    Column('ElementTypeId', Integer, ForeignKey('ElementType.id'))
+)
+
+OrderElementsType = Table(
+    'OrderElementsType',
+    Base.metadata,
+    Column('orderId', Integer, ForeignKey('orders.id')),
+    Column('ElementTypeId', Integer, ForeignKey('ElementType.id'))
+)
+
 
 OrderOrganization = Table(
     'OrderOrganization',
@@ -77,7 +94,6 @@ class OrderCellsStatus(Base):
     def __repr__(self):
         return "<OrderCellsStatus ({})>".format(self.id)
 
-
 class OrderCellsResult(Base):
     __tablename__ = "OrderCellsResult"
 
@@ -102,7 +118,8 @@ class OrderGroup(Base):
     organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="orderGroup", foreign_keys=[organizationId])
     userId = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", backref="userOrderGroup", foreign_keys=[userId])
+    user = relationship(User, backref="userOrderGroup", foreign_keys=[userId])
+    elementTypes = relationship("ElementType", secondary=OrderGroupElementsType, back_populates="orderGroups")
     elements = relationship('Elements', secondary=OrderGroupElements, backref="orderGroups")
     date = Column(BigInteger)
 
@@ -114,6 +131,7 @@ class Order(Base):
     description = Column(String)
     organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="orders")
+    elementTypes = relationship("ElementType", secondary=OrderElementsType, back_populates="orders")
     elements = relationship('Elements', secondary=OrderElements, backref="orders")
     fieldId = Column(Integer, ForeignKey('fields.id'))
     field = relationship('Field', backref="orders")

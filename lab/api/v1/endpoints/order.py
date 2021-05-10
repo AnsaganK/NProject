@@ -3,7 +3,7 @@ from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
 from lab.models.order import Order, OrderCells, OrderGroup, OrderCellsStatus
 from app.models.organization import Organization
-from lab.models.elements import Elements
+from lab.models.elements import Elements, ElementType
 from lab.models.cells import Cells
 from lab.models.orderPoints import OrderPoints
 from lab.models.status import Status
@@ -301,19 +301,21 @@ async def create_order(order: OrderSchema):
         orderGroup = OrderGroup(name=organization.name + " | " + str(date) + " | " + str(organization.id), date=date,
                                 organization=organization, user=user)
 
-        for i in order.elements:
-            element = session.query(Elements).filter(Elements.id == i).first()
-            if element:
-                orderGroup.elements.append(element)
+        for i in order.elementTypes:
+            elementType = session.query(ElementType).filter(ElementType.elementId == i["elementId"]).filter(ElementType.typeId == i["typeId"]).first()
+            if elementType:
+                orderGroup.elementTypes.append(elementType)
 
         query.group = orderGroup
         query.organization = organization
 
     query.field = field
-    for i in order.elements:
-        element = session.query(Elements).filter(Elements.id == i).first()
-        if element:
-            query.elements.append(element)
+
+    for i in order.elementTypes:
+        elementType = session.query(ElementType).filter(ElementType.elementId == i["elementId"]).filter(
+            ElementType.typeId == i["typeId"]).first()
+        if elementType:
+            query.elementTypes.append(elementType)
 
     status = session.query(Status).filter(Status.name == "planned").first()
     miniStatus = session.query(MiniStatus).filter(MiniStatus.name == "Готово").first()
