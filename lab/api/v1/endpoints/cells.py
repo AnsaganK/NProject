@@ -186,7 +186,8 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
         print(12)
         print(element_list)
         if element not in element_list:
-            return {"error": "Данного элемента нет в поле этой ячейки"}
+            continue
+            #return {"error": "Данного элемента нет в поле этой ячейки"}
         isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
         #for i in session.query(OrderCellsResult).all():
         #    if i.orderCell == cell and i.element == element:
