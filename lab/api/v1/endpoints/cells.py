@@ -50,7 +50,7 @@ async def get_results():
 @router.get("/results/{order_id}")
 async def get_cells_for_order(order_id: int):
     cells = session.query(OrderCellsResult).options(selectinload(OrderCellsResult.element)).join(OrderCells).filter(OrderCells.orderId == order_id).all()
-    elementTypes = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id).all()
+    elementTypes = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id)
     dic = []
     for cell in cells:
         cellCode = cell.orderCell.cell.code
@@ -58,7 +58,7 @@ async def get_cells_for_order(order_id: int):
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
-                elType = elementTypes.filter(ElementType.elementId == el.id)
+                elType = elementTypes.filter(ElementType.elementId == el.id).first()
                 print(12)
                 print(elType)
                 #errorRanges =
