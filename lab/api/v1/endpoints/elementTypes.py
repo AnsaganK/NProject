@@ -109,8 +109,9 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                 session.add(elementColor)
         for k in i.errorRanges:
             rangeError = ErrorRange(of=k.of, to=k.to, value=k.value)
-            elementErrorRange = ElementErrorRange(errorRange=rangeError, elementType=elementType)
-            session.add(elementErrorRange)
+            if rangeError:
+                elementErrorRange = ElementErrorRange(errorRange=rangeError, elementType=elementType)
+                session.add(elementErrorRange)
     session.add(query)
     session.commit()
 
