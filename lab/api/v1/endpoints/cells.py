@@ -56,19 +56,20 @@ async def get_cells_for_order(order_id: int):
     for cell in cells:
         cellCode = cell.orderCell.cell.code
         cellDic = {"cellCode": cell.orderCell.cell.code, "results":[]}
-        for c in cells:
-            if c.orderCell.cell.code == cellCode:
-                el = c.element
-                elType = elementTypes.filter(ElementType.elementId == el.id).first()
+        #for c in cells:
+        #    if c.orderCell.cell.code == cellCode:
+        el = cell.element
+        elType = elementTypes.filter(ElementType.elementId == el.id).first()
                 #print(elType)
-                errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == elType.id).all()
-                print(errorRanges)
-                errorNumber = "-"
-                for i in errorRanges:
-                    if c.result>i.of and c.result<=i.to:
-                        errorNumber = i.value
-                        break
-                cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result, "error": errorNumber})
+        errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == elType.id).all()
+        print(errorRanges)
+        errorNumber = "-"
+        for i in errorRanges:
+            print(f"{i.of} {cell.result} {i.to}")
+            if cell.result>i.of and cell.result<=i.to:
+                errorNumber = i.value
+                break
+        cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": cell.result, "error": errorNumber})
         if cellDic not in dic:
             dic.append(cellDic)
     return dic
