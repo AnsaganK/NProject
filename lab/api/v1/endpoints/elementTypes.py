@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("")
 async def get_all_element_types():
-    query = session.query(Type).options(selectinload(Type.elements)).all()
+    query = session.query(Type).join(Elements).options(selectinload(Type.elements)).all()
     return query
 
 def wrap_element_type(data):
