@@ -58,7 +58,7 @@ class ErrorRange(Base):
     to = Column(Float)
 
     def __repr__(self):
-        return self.name
+        return str(self.value)+"("+str(self.of)+","+str(self.to)+")"
 
 class Range(Base):
     __tablename__ = "range"
