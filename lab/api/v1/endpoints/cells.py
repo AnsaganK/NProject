@@ -66,7 +66,7 @@ async def get_cells_for_order(order_id: int):
             if cell.result>i.of and cell.result<=i.to:
                 errorNumber = i.value
                 break
-        cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result, "error": errorNumber})
+        cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": cell.result, "error": errorNumber})
         if cellDic not in dic:
             dic.append(cellDic)
     return dic
