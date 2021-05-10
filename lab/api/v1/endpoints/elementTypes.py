@@ -77,6 +77,14 @@ async def create_element_type(type: ElementTypeSchema):
     query = session.query(Type).filter(Type.id == last_id).first()
     return query
 
+@router.delete("/{type_id}")
+async def delete_element_type(type_id: int):
+    query = session.query(ElementType).filter(ElementType.id == type_id).first()
+    if query:
+        session.delete(query)
+        session.commit()
+        return {"message": "Объект был удален"}
+    return {"error": "Объект не найден"}
 
 @router.post("/add_element/{type_id}")
 async def create_element_type(type_id: int, elements: ElementForTypeSchema):
