@@ -57,6 +57,8 @@ async def get_cells_for_order(order_id: int):
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
+                types = el.types.element_types
+                print(types)
                 cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
         if cellDic not in dic:
             dic.append(cellDic)
@@ -182,15 +184,15 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
         element = session.query(Elements).filter(Elements.id == r.elementId).first()
         elements = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id).all()
         element_list = [i.element for i in elements]
-        print(element)
-        print(12)
-        print(element_list)
+        #print(element)
+        #print(12)
+        #print(element_list)
         if element not in element_list:
             continue
             #return {"error": "Данного элемента нет в поле этой ячейки"}
         isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
-        print(isElement)
-        print(cell)
+        #print(isElement)
+        #print(cell)
         #for i in session.query(OrderCellsResult).all():
         #    if i.orderCell == cell and i.element == element:
         #        return {"error": "Для данной ячейки уже существутет запись с этим элементом"}
