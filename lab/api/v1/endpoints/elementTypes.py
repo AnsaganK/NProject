@@ -27,7 +27,10 @@ async def get_all_element_types():
             elementName = j.element.name
             elementCode = j.element.code
             dic["elements"].append({"elementName": elementName,
-                                    "elementCode": elementCode
+                                    "elementCode": elementCode,
+                                    "elementId": j.element.id,
+                                    "typeId": j.type.id,
+                                    "id": j.id,
                                     })
         response.append(dic)
     return response
