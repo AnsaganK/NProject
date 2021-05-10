@@ -3,7 +3,8 @@ from pydantic.types import List
 from db import session
 from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
-from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
+from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color, ErrorRange, \
+    ElementErrorRange
 from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
 from lab.models.status import Status
@@ -60,8 +61,13 @@ async def get_cells_for_order(order_id: int):
                 el = c.element
                 elType = elementTypes.filter(ElementType.elementId == el.id).first()
                 print(elType)
-                #errorRanges =
-                cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
+                errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.c.elementTypeId == elType.id).all()
+                errorNumber = 0
+                for i in errorRanges:
+                    if c.result>i.of and c.result<i.to:
+                        errorNumber = i.value
+                        break
+                cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result, "error": errorNumber})
         if cellDic not in dic:
             dic.append(cellDic)
     return dic
