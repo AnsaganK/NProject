@@ -180,7 +180,7 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
     cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == cell_code).first()
     for r in orderCellsResultSchema.results:
         element = session.query(Elements).filter(Elements.id == r.elementId).first()
-        elements = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.orderId == order_id).all()
+        elements = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id).all()
         element_list = [i.element for i in elements]
         if element not in element_list:
             return {"error": "Данного элемента нет в поле этой ячейки"}
