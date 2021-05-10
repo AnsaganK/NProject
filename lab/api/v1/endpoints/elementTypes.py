@@ -17,7 +17,10 @@ async def get_all_element_types():
     query = session.query(Type).options(selectinload(Type.elements)).all()
     for i in query:
         for j in i.elements:
-            print(j.element)
+            elementName = j.element.name
+            elementCode = j.element.code
+            j["elementName"] = elementName
+            j["elementCode"] = elementCode
     return query
 
 def wrap_element_type(data):
