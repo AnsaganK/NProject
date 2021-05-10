@@ -98,7 +98,7 @@ async def get_points_for_order(order_id: int):
 @router.get("/groups/{group_id}")
 async def get_order_group_id(group_id: int):
     # query = session.query(Order).join(OrderGroup).filter(OrderGroup.id == group_id).all()
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elementTypes)).options(
         selectinload(OrderGroup.orders)).filter(OrderGroup.id == group_id).first()
     for i in query.orders:
         if i.field:
@@ -185,7 +185,7 @@ async def get_cells_for_order(status: StatusIdSchema):
 
 @router.get("/groups")
 async def get_order_group():
-    query = session.query(OrderGroup).options(selectinload(OrderGroup.elements)).options(selectinload(OrderGroup.user)).options(
+    query = session.query(OrderGroup).options(selectinload(OrderGroup.elementTypes)).options(selectinload(OrderGroup.user)).options(
         selectinload(OrderGroup.organization)).all()
     for i in query:
         a = i.__dict__
@@ -202,16 +202,15 @@ async def get_order_group():
 
 @router.get("/{order_id}")
 async def get_order(order_id: int):
-    query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elements)).options(
-        selectinload(Order.elements)).filter(Order.id == order_id).first()
+    query = session.query(Order).options(selectinload(Order.cells)).options(selectinload(Order.elementTypes)).options(
+        selectinload(Order.elementTypes)).filter(Order.id == order_id).first()
     group = session.query(OrderGroup).filter(OrderGroup.id == query.groupId).first()
     groupId = group.id
     user = session.query(User).join(OrderGroup).filter(OrderGroup.id == groupId).first()
     if query:
-        for i in query.elements:
-            print(i.types)
-            for j in i.types:
-                print(j)
+        #for i in query.elementTypes:
+        #    for j in i.types:
+        #        print(j)
         query = query.__dict__
         return {**query, "user": user}
     return {"error": "Not Found"}
@@ -242,7 +241,7 @@ async def update_order(order_id: int, order: OrderSchema):
     orderGroup = session.query(OrderGroup).filter(OrderGroup.id == order.orderGroupId).first()
     query.group = orderGroup
     user = orderGroup.user
-    query.elements = []
+    query.elementTypes = []
     if order.date:
         query.date = order.date
     else:
@@ -253,11 +252,12 @@ async def update_order(order_id: int, order: OrderSchema):
         return {"error": "Not Found Field"}
     query.field = field
 
-    query.elements = []
-    for i in order.elements:
-        element = session.query(Elements).filter(Elements.id == i).first()
-        if element:
-            query.elements.append(element)
+    query.elementTypes = []
+    for i in order.elementTypes:
+        elementType = session.query(ElementType).filter(ElementType.elementId == i["elementId"]).filter(
+            ElementType.typeId == i["typeId"]).first()
+        if elementType:
+            orderGroup.elementTypes.append(elementType)
 
     session.add(query)
     session.commit()
