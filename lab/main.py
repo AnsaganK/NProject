@@ -6,7 +6,9 @@ from lab.api.v1.api import api_router
 import sqlalchemy
 from app.models import Base, DATABASE_URL, engine
 from app.main import metadata
+import sys
 
+sys.setrecursionlimit(1500)
 app = FastAPI(title="KazAgroLab",
               version="1.0.0",
               openapi_url=f"{settings.API_V1_STR}/openapi.json"
