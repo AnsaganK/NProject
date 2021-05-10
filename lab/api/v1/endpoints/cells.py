@@ -176,11 +176,12 @@ async def get_cells_for_order(order_id: int):
 
 @router.post("/result/{order_id}/{cell_code}")
 async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResultSchema: OrderCellsResultSchema):
-    order = session.query(Order).filter(Order.id == order_id).first()
+    #order = session.query(Order).filter(Order.id == order_id).first()
     cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == cell_code).first()
     for r in orderCellsResultSchema.results:
         element = session.query(Elements).filter(Elements.id == r.elementId).first()
-        if element not in order.elements:
+        elements = session.query(Elements).join(Order).filter(Order.id == order_id).all()
+        if element not in elements:
             return {"error": "Данного элемента нет в поле этой ячейки"}
         isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
         #for i in session.query(OrderCellsResult).all():
