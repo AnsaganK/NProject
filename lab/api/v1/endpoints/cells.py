@@ -198,7 +198,11 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
             date = int(time.time())*1000
             if not isElement:
                 result = OrderCellsResult(orderCell=cell, element=element, result=r.value, date=date)
-                session.add(result)
+            else:
+                isElement.result = r.value
+                isElement.date = date
+                result = isElement
+            session.add(result)
     session.commit()
     orderCellsResultSchema = orderCellsResultSchema.dict()
 
