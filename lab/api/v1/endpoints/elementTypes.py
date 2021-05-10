@@ -79,8 +79,7 @@ async def create_element_type(type: ElementTypeSchema):
 
 @router.delete("/{type_id}")
 async def delete_element_type(type_id: int):
-    query = session.query(ElementType).filter(ElementType.id == type_id).first()
-    print(query)
+    query = session.query(Type).filter(Type.id == type_id).first()
     if query:
         session.delete(query)
         session.commit()
