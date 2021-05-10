@@ -59,7 +59,6 @@ async def get_cells_for_order(order_id: int):
             if c.orderCell.cell.code == cellCode:
                 el = c.element
                 elType = elementTypes.filter(ElementType.elementId == el.id).first()
-                print(12)
                 print(elType)
                 #errorRanges =
                 cellDic["results"].append({"element": {"id":el.id, "code": el.code, "name": el.name}, "value": c.result})
