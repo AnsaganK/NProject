@@ -103,6 +103,8 @@ async def get_order_group_id(group_id: int):
     for i in query.orders:
         if i.field:
             i.__dict__['fieldName'] = i.field.name
+    for i in query.elementTypes:
+        i.__dict__["elementName"] = i.element.name
     if query:
         return query
     return {"error": "Not Found"}
