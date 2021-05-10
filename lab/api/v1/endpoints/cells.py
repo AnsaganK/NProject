@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
 from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color
 from lab.models.mini_status import MiniStatus
-from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup
+from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
 from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
 from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray
@@ -180,7 +180,7 @@ async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResult
     cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == cell_code).first()
     for r in orderCellsResultSchema.results:
         element = session.query(Elements).filter(Elements.id == r.elementId).first()
-        elements = session.query(Elements).join(Order).filter(Order.id == order_id).all()
+        elements = session.query(Elements).join(OrderElementsType).filter(OrderElementsType.orderId == order_id).all()
         if element not in elements:
             return {"error": "Данного элемента нет в поле этой ячейки"}
         isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
