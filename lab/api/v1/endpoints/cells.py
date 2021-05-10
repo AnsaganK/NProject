@@ -56,6 +56,7 @@ async def get_cells_for_order(order_id: int):
     for cell in cells:
         cellCode = cell.orderCell.cell.code
         cellDic = {"cellCode": cell.orderCell.cell.code, "results":[]}
+        print("-------------")
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
