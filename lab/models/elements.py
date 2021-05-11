@@ -5,7 +5,6 @@ import datetime
 
 from lab.models.order import OrderElementsType, OrderGroupElementsType
 
-
 class Type(Base):
     __tablename__ = "types"
 
@@ -19,20 +18,7 @@ class Type(Base):
         return self.name
 
 
-class ElementType(Base):
-    __tablename__ = "ElementType"
 
-    id = Column(Integer, primary_key=True)
-    typeId = Column(Integer, ForeignKey('types.id'))
-    type = relationship("Type", cascade="all,delete", backref="elements")
-    elementId = Column(Integer, ForeignKey('elements.id'))
-    element = relationship("Elements",  backref="types")
-
-    orderGroups = relationship("OrderGroup", secondary=OrderGroupElementsType, back_populates="elementTypes")
-    orders = relationship("Order", secondary=OrderElementsType, back_populates="elementTypes")
-
-    def __repr__(self):
-        return "<ElementType ({})>".format(self.id)
 
 
 class ElementErrorRange(Base):
@@ -119,3 +105,20 @@ class Elements(Base):
 
     def __repr__(self):
         return "<element ({})>".format(self.name)
+
+
+
+class ElementType(Base):
+    __tablename__ = "ElementType"
+
+    id = Column(Integer, primary_key=True)
+    typeId = Column(Integer, ForeignKey('types.id'))
+    type = relationship("Type", cascade="all,delete", backref="elements")
+    elementId = Column(Integer, ForeignKey('elements.id'))
+    element = relationship("Elements",  backref="types")
+
+    orderGroups = relationship("OrderGroup", secondary=OrderGroupElementsType, back_populates="elementTypes")
+    orders = relationship("Order", secondary=OrderElementsType, back_populates="elementTypes")
+
+    def __repr__(self):
+        return "<ElementType ({})>".format(self.id)
