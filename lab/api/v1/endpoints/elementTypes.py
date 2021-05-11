@@ -94,10 +94,30 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     query.gost = elements.gost
     data = []
     newEls = []
-    elementIds = [i.elementId for i in elements.elements]
+    #query.elements = []
     for i in query.elements:
-        if i.id in elementIds:
-            data.append(i)
+        for el in elements.elements:
+            if i.id == el.elementId:
+                data.append(i)
+                elementType = session.query(ElementType).filter(ElementType.elementId == i.id).filter(ElementType.typeId == query.id).first()
+                elementType.color = None
+                elementType.element_types = None
+                for j in el.colorRanges:
+                    range_name = j.name
+                    range_of = j.of
+                    range_to = j.to
+                    range = Range(name=range_name, of=range_of, to=range_to)
+                    color = session.query(Color).filter(Color.id == j.color).first()
+                    if color:
+                        rangeColor = RangeColor(range=range, color=color)
+                        elementColor = ElementColor(elementType=elementType, rangeColor=rangeColor)
+                        session.add(elementColor)
+                for k in el.errorRanges:
+                    rangeError = ErrorRange(of=k.of, to=k.to, value=k.value)
+                    if rangeError:
+                        elementErrorRange = ElementErrorRange(errorRange=rangeError, elementType=elementType)
+                        session.add(elementErrorRange)
+
     oldEls = [i.id for i in query.elements]
     for i in elements.elements:
         if i.elementId not in oldEls:
