@@ -92,7 +92,12 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     query.name = elements.name
     query.description = elements.description
     query.gost = elements.gost
-    query.elements = []
+    data = []
+    elementIds = [i.elementId for i in elements.elements]
+    for i in query.elements:
+        if i.id in elementIds:
+            data.append(i)
+    query.elements = data
     for i in elements.elements:
         print(i)
         element = session.query(Elements).filter(Elements.id == i.elementId).first()
