@@ -100,7 +100,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
             print(i.elementId, " == ", el.elementId)
             if i.elementId == el.elementId:
                 data.append(i)
-                elementType = session.query(ElementType).filter(ElementType.elementId == i.id).filter(ElementType.typeId == query.id).first()
+                elementType = session.query(ElementType).filter(ElementType.elementId == i.elementId).filter(ElementType.typeId == query.id).first()
                 for k in elementType.color:
                     print("1:  ",k)
                     session.delete(k)
