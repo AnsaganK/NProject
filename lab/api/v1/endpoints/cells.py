@@ -57,19 +57,19 @@ async def get_cells_for_order(order_id: int):
     for cell in cells:
         cellCode = cell.orderCell.cell.code
         cellDic = {"cellCode": cell.orderCell.cell.code, "results":[]}
-        print("-------------")
+        #print("-------------")
         for c in cells:
             if c.orderCell.cell.code == cellCode:
                 el = c.element
                 elType = elementTypes.filter(ElementType.elementId == el.id).first()
-                print(elType)
+                #print(elType)
                 #errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == i.id).all()
                 errorRanges = session.query(ErrorRange).join(ElementErrorRange).filter(ElementErrorRange.elementTypeId == elType.id).all()
-                if errorRanges:
-                    print(errorRanges)
+                #if errorRanges:
+                    #print(errorRanges)
                 errorNumber = "-"
                 for i in errorRanges:
-                    print(f"    {i.of} {cell.result} {i.to}")
+                    #print(f"    {i.of} {cell.result} {i.to}")
                     if c.result>i.of and c.result<=i.to:
                         errorNumber = i.value
                         break
