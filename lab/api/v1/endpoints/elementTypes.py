@@ -101,11 +101,11 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                 data.append(i)
                 elementType = session.query(ElementType).filter(ElementType.elementId == i.id).filter(ElementType.typeId == query.id).last()
                 for k in elementType.color:
-                    print(k)
+                    print("1:  ",k)
                     session.delete(k)
                     session.commit()
                 for k in elementType.element_types:
-                    print(k)
+                    print("2:  ",k)
                     session.delete(k)
                     session.commit()
                 for j in el.colorRanges:
@@ -130,6 +130,8 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
             newEls.append(i)
     #query.elements = []
     query.elements = data
+    print()
+    print(query.elements)
     for i in newEls:
         print(i)
         element = session.query(Elements).filter(Elements.id == i.elementId).first()
