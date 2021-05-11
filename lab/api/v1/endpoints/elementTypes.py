@@ -97,6 +97,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     #query.elements = []
     for i in query.elements:
         for el in elements.elements:
+            print(i.id, " == ", el.elementId)
             if i.id == el.elementId:
                 data.append(i)
                 elementType = session.query(ElementType).filter(ElementType.elementId == i.id).filter(ElementType.typeId == query.id).last()
