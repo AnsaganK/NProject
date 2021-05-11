@@ -228,7 +228,7 @@ async def get_order_group_id_delete(group_id: int):
     if query:
         session.delete(query)
         session.commit()
-        return {"error": "OrderGroup ({}) deleted".format(query.id)}
+        return {"message": "OrderGroup ({}) deleted".format(query.id)}
     return {"error": "Not Found Order Group"}
 
 
