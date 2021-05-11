@@ -216,6 +216,9 @@ async def get_order(order_id: int):
         #for i in query.elementTypes:
         #    for j in i.types:
         #        print(j)
+        for j in query.elementTypes:
+            j.__dict__["elementName"] = j.element.name
+            del j.__dict__["element"]
         query = query.__dict__
         return {**query, "user": user}
     return {"error": "Not Found"}
