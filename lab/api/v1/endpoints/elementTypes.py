@@ -122,7 +122,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
         if i.elementId not in oldEls:
             newEls.append(i)
     #query.elements = []
-    query.elements = data
+    #query.elements = data
     print()
     print(query.elements)
     for i in newEls:
