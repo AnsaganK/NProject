@@ -140,15 +140,13 @@ async def resultColor(order_id: int, element_id: int):
     for i in types:
         if i.type:
             elDic = {"name": i.type.name, "id": i.type.id, "cells": []}
-        else:
-            elDic = {'name': None, "id": None, 'cells': []}
-        for cell in cells:
-            cellCode = cell.orderCell.cell.code
-            cellResult = cell.result
-            cellColor = changeColor(i.color, cellResult)
-            colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
-            elDic["cells"].append(colorDic)
-        dic.append(elDic)
+            for cell in cells:
+                cellCode = cell.orderCell.cell.code
+                cellResult = cell.result
+                cellColor = changeColor(i.color, cellResult)
+                colorDic = {"cellCode": cellCode, "cellResult": cellResult, "cellColor": cellColor}
+                elDic["cells"].append(colorDic)
+            dic.append(elDic)
     return dic
 
 #@router.get("/{order_id}")
