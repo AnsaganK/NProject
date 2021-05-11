@@ -95,6 +95,11 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
     data = []
     newEls = []
     #query.elements = []
+    oldEls = [i.elementId for i in query.elements]
+    for i in elements.elements:
+        if i.elementId not in oldEls:
+            newEls.append(i)
+
     for i in query.elements:
         for el in elements.elements:
             print(i.elementId, " == ", el.elementId)
@@ -117,10 +122,7 @@ async def create_element_type(type_id: int, elements: ElementForTypeSchema):
                         elementErrorRange = ElementErrorRange(errorRange=rangeError, elementType=elementType)
                         session.add(elementErrorRange)
 
-    oldEls = [i.id for i in query.elements]
-    for i in elements.elements:
-        if i.elementId not in oldEls:
-            newEls.append(i)
+
     #query.elements = []
     #query.elements = data
     print()
