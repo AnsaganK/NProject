@@ -133,6 +133,8 @@ async def get_order_group_organization(organization_id: int):
 async def get_status_for_order_cells(orderId: int, cellsCode: int):
     currentStatus = session.query(OrderCellsStatus).join(OrderCells).join(Cells).filter(
         OrderCells.orderId == orderId).filter(Cells.code == cellsCode).order_by(OrderCellsStatus.id.desc()).first()
+
+    currentStatus.__dict__["orderCellsId"] = cellsCode
     statuses = session.query(OrderCellsStatus).options(selectinload(OrderCellsStatus.status)).options(
         selectinload(OrderCellsStatus.miniStatus)).join(OrderCells).join(Cells).filter(
         OrderCells.orderId == orderId).filter(Cells.code == cellsCode).all()
