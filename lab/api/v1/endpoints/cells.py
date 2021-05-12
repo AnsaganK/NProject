@@ -3,7 +3,8 @@ from pydantic.types import List
 from db import session
 from fastapi import APIRouter, Query, Body
 from lab.models.cells import Cells, CellsHistory
-from lab.models.elements import Elements, ElementType, ElementColor, RangeColor, Range, Color, ErrorRange, \
+from lab.models.element_type import ElementType
+from lab.models.elements import Elements, ElementColor, RangeColor, Range, Color, ErrorRange, \
     ElementErrorRange
 from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
