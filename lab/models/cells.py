@@ -2,7 +2,7 @@ from config import Base
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, BigInteger, Table, ForeignKey
 from sqlalchemy.orm import relationship
 import datetime
-from lab.models.order import OrderCells
+#from lab.models.order import OrderCells
 
 class CellsHistory(Base):
     __tablename__ = "CellsHistory"

@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 import datetime
 
 
-from lab.models.order import OrderElementsType, OrderGroupElementsType
+#from lab.models.order import OrderElementsType, OrderGroupElementsType
 
 class Type(Base):
     __tablename__ = "types"
