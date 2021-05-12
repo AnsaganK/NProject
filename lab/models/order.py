@@ -6,6 +6,12 @@ import datetime
 from sqlalchemy import ForeignKey
 from lab.models.status import Status
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .elements import Elements
+    from .element_type import ElementType
+
 OrderGroupElements = Table(
     'OrderGroupElements',
     Base.metadata,

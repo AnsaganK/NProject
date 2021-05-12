@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, BigInteger, F
 from sqlalchemy.orm import relationship
 import datetime
 
+
 from lab.models.order import OrderElementsType, OrderGroupElementsType
 
 class Type(Base):
