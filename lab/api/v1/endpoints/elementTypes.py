@@ -2,7 +2,8 @@ import time
 
 from db import session
 from fastapi import APIRouter
-from lab.models.elements import ElementType, Type, Elements, Color, Range, RangeColor, ElementColor, ErrorRange, \
+from lab.models.element_type import ElementType
+from lab.models.elements import Type, Elements, Color, Range, RangeColor, ElementColor, ErrorRange, \
     ElementErrorRange
 from sqlalchemy.orm import selectinload
 

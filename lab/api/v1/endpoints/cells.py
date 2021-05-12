@@ -136,7 +136,7 @@ async def resultColor(order_id: int, element_id: int):
                 pass
     dic = []
     types = session.query(ElementType).join(Elements).filter(Elements.id == element_id).all()
-    print(types)
+    #print(types)
     for i in types:
         if i.type:
             elDic = {"name": i.type.name, "id": i.type.id, "cells": []}

@@ -3,7 +3,8 @@ from db import session
 from fastapi import APIRouter, Depends, Query, Response, status
 from lab.models.order import Order, OrderCells, OrderGroup, OrderCellsStatus
 from app.models.organization import Organization
-from lab.models.elements import Elements, ElementType
+from lab.models.elements import Elements
+from lab.models.element_type import ElementType
 from lab.models.cells import Cells
 from lab.models.orderPoints import OrderPoints
 from lab.models.status import Status
