@@ -195,7 +195,7 @@ async def get_cells_for_order(order_id: int):
     return cells
 
 @router.post("/result/{order_id}")
-async def create_result_for_cell(order_id: int, orderCellsResultSchema: OrderCellsResultsSchema):
+async def create_result_for_cell(order_id: int, orderCellsResultSchema: List[OrderCellsResultsSchema]):
     for i in orderCellsResultSchema.results:
         cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == i.cellCode).first()
         for r in orderCellsResultSchema.results:

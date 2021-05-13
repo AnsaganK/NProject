@@ -7,8 +7,7 @@ class ResultList(BaseModel):
 
 class ResultsList(BaseModel):
     cellCode: int
-    elementId: int
-    value: float
+    results: List[ResultList]
 
 class OrderCellsResultSchema(BaseModel):
     results: List[ResultList]
