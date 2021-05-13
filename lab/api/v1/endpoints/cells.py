@@ -12,7 +12,7 @@ from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
 from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
-from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray
+from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray, OrderCellsResultsSchema
 import time
 from sqlalchemy.orm import selectinload
 
@@ -193,6 +193,31 @@ async def get_cells_for_order(order_id: int):
                 miniStatusId = None
             i.__dict__["currentStatus"] = {"statusName":statusName, "statusId":statusId, "miniStatusId": miniStatusId, "miniStatusName": miniStatusName}
     return cells
+
+@router.post("/result/{order_id}")
+async def create_result_for_cell(order_id: int, orderCellsResultSchema: OrderCellsResultsSchema):
+    for i in orderCellsResultSchema.results:
+        cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == i.cellCode).first()
+        for r in orderCellsResultSchema.results:
+            element = session.query(Elements).filter(Elements.id == r.elementId).first()
+            elements = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id).all()
+            element_list = [i.element for i in elements]
+            if element not in element_list:
+                continue
+            isElement = session.query(OrderCellsResult).filter(OrderCellsResult.elementId == element.id).filter(OrderCellsResult.orderCellId == cell.id).first()
+            if cell and element:
+                date = int(time.time())*1000
+                if not isElement:
+                    result = OrderCellsResult(orderCell=cell, element=element, result=r.value, date=date)
+                else:
+                    isElement.result = r.value
+                    isElement.date = date
+                    result = isElement
+                session.add(result)
+        session.commit()
+        orderCellsResultSchema = orderCellsResultSchema.dict()
+
+    return {**orderCellsResultSchema}
 
 @router.post("/result/{order_id}/{cell_code}")
 async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResultSchema: OrderCellsResultSchema):

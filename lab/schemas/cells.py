@@ -5,10 +5,16 @@ class ResultList(BaseModel):
     elementId: int
     value: float
 
+class ResultsList(BaseModel):
+    cellCode: int
+    elementId: int
+    value: float
 
 class OrderCellsResultSchema(BaseModel):
     results: List[ResultList]
 
+class OrderCellsResultsSchema(BaseModel):
+    results: List[ResultsList]
 
 class EditCellsArrayData(BaseModel):
     cellCode: int
