@@ -198,7 +198,7 @@ async def get_cells_for_order(order_id: int):
 async def create_result_for_cell(order_id: int, orderCellsResultSchema: List[ResultsList]):
     for i in orderCellsResultSchema:
         cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == i.cellCode).first()
-        for r in orderCellsResultSchema.results:
+        for r in i.results:
             element = session.query(Elements).filter(Elements.id == r.elementId).first()
             elements = session.query(ElementType).join(OrderElementsType).filter(OrderElementsType.c.orderId == order_id).all()
             element_list = [i.element for i in elements]
