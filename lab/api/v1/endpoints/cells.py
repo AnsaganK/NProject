@@ -12,7 +12,7 @@ from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
 from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
-from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray, OrderCellsResultsSchema
+from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray, OrderCellsResultsSchema, ResultsList
 import time
 from sqlalchemy.orm import selectinload
 
@@ -195,7 +195,7 @@ async def get_cells_for_order(order_id: int):
     return cells
 
 @router.post("/result/{order_id}")
-async def create_result_for_cell(order_id: int, orderCellsResultSchema: List[OrderCellsResultsSchema]):
+async def create_result_for_cell(order_id: int, orderCellsResultSchema: List[ResultsList]):
     for i in orderCellsResultSchema.results:
         cell = session.query(OrderCells).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == i.cellCode).first()
         for r in orderCellsResultSchema.results:

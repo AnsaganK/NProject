@@ -12,8 +12,6 @@ class ResultsList(BaseModel):
 class OrderCellsResultSchema(BaseModel):
     results: List[ResultList]
 
-class OrderCellsResultsSchema(BaseModel):
-    results: List[ResultsList]
 
 class EditCellsArrayData(BaseModel):
     cellCode: int
