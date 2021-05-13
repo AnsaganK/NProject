@@ -12,7 +12,7 @@ from lab.models.mini_status import MiniStatus
 from lab.models.order import Order, OrderCells, OrderCellsResult, OrderCellsStatus, OrderGroup, OrderElementsType
 from lab.models.status import Status
 from lab.schemas.status import status_dict, StatusName, StatusIdSchema
-from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray, OrderCellsResultsSchema, ResultsList
+from lab.schemas.cells import OrderCellsResultSchema, EditCellsArray, ResultsList
 import time
 from sqlalchemy.orm import selectinload
 
