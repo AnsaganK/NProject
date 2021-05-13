@@ -214,10 +214,10 @@ async def create_result_for_cell(order_id: int, orderCellsResultSchema: List[Res
                     isElement.date = date
                     result = isElement
                 session.add(result)
-        session.commit()
-        orderCellsResultSchema = orderCellsResultSchema.dict()
+    session.commit()
+    orderCellsResultSchema = orderCellsResultSchema
 
-    return {**orderCellsResultSchema}
+    return orderCellsResultSchema
 
 @router.post("/result/{order_id}/{cell_code}")
 async def create_result_for_cell(order_id: int, cell_code: int, orderCellsResultSchema: OrderCellsResultSchema):
