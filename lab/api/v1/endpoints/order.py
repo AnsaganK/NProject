@@ -22,7 +22,9 @@ from sqlalchemy import desc
 
 router = APIRouter()
 
-
+'''
+    get orders by employee role to change order status, in other words, order promotion
+'''
 @router.get("/me/{role_id}")
 async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
     decode = decodeJWT(token)
@@ -65,7 +67,9 @@ async def get_my_order(role_id: int, token: str = Depends(JWTBearer())):
                 return None
     return {"error": "У вас нет такой роли"}
 
-
+'''
+    Convert coordinates to GeoJson
+'''
 def PointsToGeoJson(points):
     featureCollection = {"type": "FeatureCollection",
                          "features": []}
@@ -79,10 +83,13 @@ def PointsToGeoJson(points):
             "properties": {"date": point["dateCreate"], "id": point["id"]}
             }
         pointsList.append(p)
-
     featureCollection["features"] = pointsList
     return featureCollection
 
+
+'''
+Selected points by the soil picker for a specific order
+'''
 @router.get("/selected_points/{order_id}")
 async def get_points_for_order(order_id: int):
     query = session.query(OrderPoints).filter(OrderPoints.orderId == order_id).first()
@@ -128,7 +135,9 @@ async def get_order_group_organization(organization_id: int):
         a["orderCount"] = session.query(Order).join(OrderGroup).filter(OrderGroup.id == a["id"]).count()
     return query
 
-
+'''
+Counter by field cells
+'''
 @router.get("/{orderId}/{cellsCode}")
 async def get_status_for_order_cells(orderId: int, cellsCode: int):
     currentStatus = session.query(OrderCellsStatus).join(OrderCells).join(Cells).filter(

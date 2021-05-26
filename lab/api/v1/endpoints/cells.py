@@ -265,7 +265,7 @@ async def get_cells(order_id: int, cell_code: int):
         return query
     return {"error": "Not Found"}
 
-
+#
 @router.post("/status/{order_id}/{cell_code}")
 async def create_status_for_cell(order_id: int, cell_code: int, status: StatusIdSchema):
     order_cell = session.query(OrderCells).options(selectinload(OrderCells.cell)).join(Cells).filter(OrderCells.orderId == order_id, Cells.code == cell_code).first()
@@ -288,6 +288,7 @@ async def create_status_for_cell(order_id: int, cell_code: int, status: StatusId
 async def get_cells():
     query = session.query(OrderCells).options(selectinload(OrderCells.cell)).all()
     return query
+
 
 
 

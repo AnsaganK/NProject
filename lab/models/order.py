@@ -9,8 +9,8 @@ from lab.models.status import Status
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .elements import Elements
-    from .element_type import ElementType
+    from .elements import Elements # noqa F401
+    from .element_type import ElementType # noqa F401
 
 OrderGroupElements = Table(
     'OrderGroupElements',
