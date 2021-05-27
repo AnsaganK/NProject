@@ -135,7 +135,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
-    cellArea = Column(Float)
+    cellarea = Column(Float)
     organizationId = Column(Integer, ForeignKey('organization.id'))
     organization = relationship('Organization', backref="orders")
     elementTypes = relationship("ElementType", secondary=OrderElementsType, back_populates="orders")
