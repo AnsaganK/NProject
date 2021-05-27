@@ -295,7 +295,7 @@ async def update_order(order_id: int, order: OrderSchema):
 async def create_order(order: OrderSchema):
     date = int(time.time()) * 1000
     query = Order(name=order.name, description=order.description, date=order.date, grid=order.grid,
-                  cellCount=order.cellCount, way=order.way, cellarea=order.cellarea)
+                  cellCount=order.cellCount, way=order.way, cellArea=order.cellArea)
 
     if not query.date:
         query.date = int(time.time()) * 1000
