@@ -26,7 +26,7 @@ class OrderSchema(BaseModel):
     organizationId: Optional[int] = Field(None)
     fieldId: int
     elementTypes: Optional[List[dict]]
-    cellArea: Optional[float]
+    cellArea: Optional[float] = Field(None)
     #elements: List[int]
     grid: dict
     way: dict
