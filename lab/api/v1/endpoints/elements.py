@@ -60,7 +60,7 @@ async def get_element(element_id: int):
 
 @router.post("")
 async def create_element(element: oldElementSchema):
-    query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
+    query = Elements(name=element.name, code=element.code, standard=element.standart, date=element.date)
     if not query.date:
         query.date = int(time.time())
     for i in session.query(Elements).all():

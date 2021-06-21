@@ -55,7 +55,7 @@ class oldElementSchema(BaseModel):
     name: str
     code: str
     date: int
-    standard: bool
+    standart: bool
 
 class ElementForTypeSchema(BaseModel):
     name: Optional[str]
