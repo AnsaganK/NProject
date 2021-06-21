@@ -34,7 +34,7 @@ async def create_user(user: userForRolesSchema = Body(...)):
         if i.email == user.email:
             return {"error": "A user with this email has already been created"}
 
-    for i in user.role:
+    for i in user.roles:
         r = session.query(Role).filter(Role.id == i).first()
         if r:
             query.roles.append(r)
