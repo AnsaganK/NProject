@@ -4,7 +4,7 @@ from db import session
 from fastapi import APIRouter, Query
 from lab.models.element_type import ElementType
 from lab.models.elements import Elements, Type, Range, Color, RangeColor, ElementColor
-from lab.schemas.elements import ElementsSchema
+from lab.schemas.elements import ElementsSchema, oldElementSchema
 import time
 
 router = APIRouter()
@@ -59,7 +59,7 @@ async def get_element(element_id: int):
 
 
 @router.post("")
-async def create_element(element: ElementsSchema):
+async def create_element(element: oldElementSchema):
     query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
     if not query.date:
         query.date = int(time.time())

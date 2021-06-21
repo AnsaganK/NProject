@@ -51,6 +51,11 @@ class ElementsSchema(BaseModel):
     class Config:
         orm_mode = True
 
+class oldElementSchema(BaseModel):
+    name: str
+    code: str
+    date: int
+    standard: bool
 
 class ElementForTypeSchema(BaseModel):
     name: Optional[str]
