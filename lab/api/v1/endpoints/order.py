@@ -210,8 +210,9 @@ async def get_order_group():
             c = len(j.cells)
             zero += c
         for j in i.elementTypes:
-            j.__dict__["elementName"] = j.element.name
-            del j.__dict__["element"]
+            if j.element:
+                j.__dict__["elementName"] = j.element.name
+                del j.__dict__["element"]
         a["cellsCount"] = zero
         a["orderCount"] = len(data)
     return query
