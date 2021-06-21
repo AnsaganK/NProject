@@ -57,6 +57,22 @@ async def get_element(element_id: int):
     else:
         return {"error": "Элемент не найден"}
 
+
+@router.post("")
+async def create_element(element: ElementsSchema):
+    query = Elements(name=element.name, code=element.code, standard=element.standard, date=element.date)
+    if not query.date:
+        query.date = int(time.time())
+    for i in session.query(Elements).all():
+        if i.name == element.name:
+            return {"error": "A element with this name has already been created"}
+    session.add(query)
+    session.commit()
+
+    last_id = query.id
+    organization = element.dict()
+
+    return {**organization, "id": last_id}
 '''
 @router.post("")
 async def create_element(element: ElementsSchema):
