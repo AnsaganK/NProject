@@ -51,11 +51,12 @@ def wrap_element_type(data):
                 "range": j.range
             })
         element = session.query(Elements).filter(Elements.id == i.elementId).first()
-        elements.append({
-            "errorRanges": errorRanges,
-            "colorRanges": colorRangesList,
-            "element": element,
-        })
+        if element:
+            elements.append({
+                "errorRanges": errorRanges,
+                "colorRanges": colorRangesList,
+                "element": element,
+            })
     dic["elements"] = elements
     return dic
 
